@@ -14,9 +14,8 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "Left Events - 人生の経験を記録し、振り返る",
-  description:
-    "経験の価値と有限性に気づき、これからの限られた経験機会を主体的に選択・共有できるアプリケーション",
+  title: "Left Events",
+  description: "人生の経験を記録",
 }
 
 export default function RootLayout({
@@ -42,28 +41,25 @@ export default function RootLayout({
                     className="inline-flex items-center gap-1 px-1 pt-1 text-sm font-medium text-gray-900 hover:text-gray-700"
                   >
                     <Home className="w-4 h-4" />
-                    ホーム
                   </a>
                   <a
                     href="/experiences"
                     className="inline-flex items-center gap-1 px-1 pt-1 text-sm font-medium text-gray-900 hover:text-gray-700"
                   >
                     <BookOpen className="w-4 h-4" />
-                    経験の記録
+                    記録
                   </a>
                   <a
                     href="/visualization"
                     className="inline-flex items-center gap-1 px-1 pt-1 text-sm font-medium text-gray-900 hover:text-gray-700"
                   >
                     <BarChart3 className="w-4 h-4" />
-                    可視化
                   </a>
                   <a
                     href="/life-simulation"
                     className="inline-flex items-center gap-1 px-1 pt-1 text-sm font-medium text-gray-900 hover:text-gray-700"
                   >
                     <Clock className="w-4 h-4" />
-                    残り回数
                   </a>
                 </div>
               </div>

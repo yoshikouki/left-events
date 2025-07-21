@@ -43,7 +43,7 @@ export default function ExperiencesPage() {
   }
 
   const handleDeleteExperience = (experience: Experience) => {
-    if (confirm(`「${experience.title}」を削除しますか？`)) {
+    if (confirm(`${experience.title}を削除？`)) {
       setExperiences(experiences.filter((exp) => exp.id !== experience.id))
     }
   }
@@ -59,10 +59,7 @@ export default function ExperiencesPage() {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">あなたの経験</h1>
-          <p className="text-gray-600">
-            人生の大切な瞬間を記録し、振り返ることで新たな気づきを得ましょう
-          </p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">経験記録</h1>
         </div>
 
         {!showForm && !editingExperience && (
@@ -73,16 +70,14 @@ export default function ExperiencesPage() {
               className="flex items-center gap-2 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 shadow-sm"
             >
               <Plus className="w-5 h-5" />
-              新しい経験を記録
+              新規
             </button>
           </div>
         )}
 
         {(showForm || editingExperience) && (
           <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <h2 className="text-xl font-semibold mb-4">
-              {editingExperience ? "経験を編集" : "新しい経験を記録"}
-            </h2>
+            <h2 className="text-xl font-semibold mb-4">{editingExperience ? "編集" : "新規"}</h2>
             <ExperienceForm
               initialData={editingExperience || undefined}
               onSubmit={editingExperience ? handleUpdateExperience : handleCreateExperience}
@@ -108,7 +103,7 @@ export default function ExperiencesPage() {
             onEdit={handleEditFromDetail}
             onShare={() => {
               // TODO: 共有機能の実装
-              alert("共有機能は準備中です")
+              alert("準備中")
             }}
           />
         )}

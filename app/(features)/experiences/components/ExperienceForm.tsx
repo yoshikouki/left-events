@@ -79,7 +79,7 @@ export function ExperienceForm({ initialData, onSubmit, onCancel }: ExperienceFo
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
         <label htmlFor="title" className="block text-sm font-medium mb-2">
-          タイトル *
+          タイトル
         </label>
         <input
           id="title"
@@ -88,7 +88,7 @@ export function ExperienceForm({ initialData, onSubmit, onCancel }: ExperienceFo
           value={formData.title}
           onChange={(e) => setFormData({ ...formData, title: e.target.value })}
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          placeholder="例：家族で行った初めての北海道旅行"
+          placeholder="家族旅行"
         />
       </div>
 
@@ -102,13 +102,13 @@ export function ExperienceForm({ initialData, onSubmit, onCancel }: ExperienceFo
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           rows={4}
-          placeholder="その時の思い出や感じたことを記録しましょう"
+          placeholder="詳細"
         />
       </div>
 
       <div>
         <label htmlFor="date" className="block text-sm font-medium mb-2">
-          日付 *
+          日付
         </label>
         <input
           id="date"
@@ -122,7 +122,7 @@ export function ExperienceForm({ initialData, onSubmit, onCancel }: ExperienceFo
 
       <div>
         <label htmlFor="category" className="block text-sm font-medium mb-2">
-          カテゴリ *
+          カテゴリ
         </label>
         <select
           id="category"
@@ -142,7 +142,7 @@ export function ExperienceForm({ initialData, onSubmit, onCancel }: ExperienceFo
       </div>
 
       <div>
-        <p className="block text-sm font-medium mb-2">一緒にいた人</p>
+        <p className="block text-sm font-medium mb-2">同伴者</p>
         <div className="space-y-2">
           <div className="flex gap-2">
             <input
@@ -156,7 +156,7 @@ export function ExperienceForm({ initialData, onSubmit, onCancel }: ExperienceFo
                 }
               }}
               className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="名前を入力"
+              placeholder="名前"
             />
             <button
               type="button"
@@ -197,12 +197,12 @@ export function ExperienceForm({ initialData, onSubmit, onCancel }: ExperienceFo
           value={formData.location || ""}
           onChange={(e) => setFormData({ ...formData, location: e.target.value })}
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          placeholder="例：北海道札幌市"
+          placeholder="札幌"
         />
       </div>
 
       <div>
-        <p className="block text-sm font-medium mb-2">感情タグ</p>
+        <p className="block text-sm font-medium mb-2">感情</p>
         <div className="space-y-2">
           <div className="flex gap-2">
             <input
@@ -216,7 +216,7 @@ export function ExperienceForm({ initialData, onSubmit, onCancel }: ExperienceFo
                 }
               }}
               className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="例：感動、楽しい、新鮮"
+              placeholder="楽しい"
             />
             <button
               type="button"
@@ -255,7 +255,7 @@ export function ExperienceForm({ initialData, onSubmit, onCancel }: ExperienceFo
             onChange={(e) => setFormData({ ...formData, isPrivate: !e.target.checked })}
             className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
           />
-          <span className="text-sm">この経験を他の人と共有可能にする</span>
+          <span className="text-sm">共有する</span>
         </label>
       </div>
 
@@ -266,7 +266,7 @@ export function ExperienceForm({ initialData, onSubmit, onCancel }: ExperienceFo
           className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Save className="w-4 h-4" />
-          {isSubmitting ? "保存中..." : "保存"}
+          保存
         </button>
         {onCancel && (
           <button

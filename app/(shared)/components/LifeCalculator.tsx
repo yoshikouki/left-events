@@ -30,25 +30,25 @@ export function LifeCalculator() {
     // 代表的なライフイベントの残り回数
     const lifeEvents: LifeEvent[] = [
       {
-        name: "桜を見る",
+        name: "桜",
         frequency: 1,
         icon: <span className="text-pink-500">🌸</span>,
         remainingCount: remainingYears,
       },
       {
-        name: "誕生日を祝う",
+        name: "誕生日",
         frequency: 1,
         icon: <span className="text-yellow-500">🎂</span>,
         remainingCount: remainingYears,
       },
       {
-        name: "正月を迎える",
+        name: "正月",
         frequency: 1,
         icon: <span className="text-red-500">🎍</span>,
         remainingCount: remainingYears,
       },
       {
-        name: "親と過ごす時間",
+        name: "親と会う",
         frequency: 12, // 月1回と仮定
         icon: <Users className="w-4 h-4 text-blue-500" />,
         remainingCount: currentAge < 50 ? Math.round(remainingYears * 0.4 * 12) : 0, // 親の寿命を考慮
@@ -67,11 +67,11 @@ export function LifeCalculator() {
 
   return (
     <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 max-w-2xl mx-auto">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">あなたの残り時間を知る</h2>
+      <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">残り時間</h2>
 
       <div className="mb-8">
         <label htmlFor="birthYear" className="block text-sm font-medium text-gray-700 mb-2">
-          生まれ年を入力してください
+          生まれ年
         </label>
         <input
           id="birthYear"
@@ -80,7 +80,7 @@ export function LifeCalculator() {
           max={currentYear}
           value={birthYear}
           onChange={(e) => setBirthYear(e.target.value)}
-          placeholder="例: 1990"
+          placeholder="1990"
           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg"
         />
       </div>
@@ -92,7 +92,7 @@ export function LifeCalculator() {
               現在{" "}
               <span className="font-bold text-2xl text-gray-900">{calculations.currentAge}</span> 歳
             </p>
-            <p className="text-sm text-gray-500 mt-1">（平均寿命を{lifeExpectancy}歳として計算）</p>
+            <p className="text-sm text-gray-500 mt-1">（平均{lifeExpectancy}歳）</p>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -127,7 +127,7 @@ export function LifeCalculator() {
           </div>
 
           <div className="border-t pt-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">人生の残り回数</h3>
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">残り回数</h3>
             <div className="space-y-3">
               {calculations.lifeEvents.map((event) => (
                 <div key={event.name} className="flex items-center justify-between">
@@ -144,11 +144,7 @@ export function LifeCalculator() {
           </div>
 
           <div className="bg-blue-50 rounded-lg p-4 text-center">
-            <p className="text-sm text-blue-800">
-              限られた時間だからこそ、一つ一つの経験が特別な意味を持ちます。
-              <br />
-              今この瞬間を大切に生きましょう。
-            </p>
+            <p className="text-sm text-blue-800">今を大切に</p>
           </div>
         </div>
       )}

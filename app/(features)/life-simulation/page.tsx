@@ -11,8 +11,8 @@ const initialEvents: LifeEvent[] = [
   {
     id: "1",
     userId: "user-1",
-    title: "親と一緒に旅行する",
-    description: "両親が元気なうちに一緒に旅行を楽しむ",
+    title: "親と旅行",
+    description: "",
     averageFrequency: 1,
     lastOccurrence: new Date("2023-08-15"),
     importance: "high",
@@ -22,8 +22,8 @@ const initialEvents: LifeEvent[] = [
   {
     id: "2",
     userId: "user-1",
-    title: "子どもの運動会を見る",
-    description: "子どもの成長を見守る大切な機会",
+    title: "運動会",
+    description: "",
     averageFrequency: 1,
     importance: "high",
     createdAt: new Date(),
@@ -32,8 +32,8 @@ const initialEvents: LifeEvent[] = [
   {
     id: "3",
     userId: "user-1",
-    title: "親友と会う",
-    description: "昔からの親友と定期的に会って話す",
+    title: "親友",
+    description: "",
     averageFrequency: 4,
     lastOccurrence: new Date("2024-01-10"),
     importance: "medium",
@@ -102,7 +102,7 @@ export default function LifeSimulationPage() {
   }
 
   const handleDeleteEvent = (id: string) => {
-    if (confirm("このライフイベントを削除しますか？")) {
+    if (confirm("削除？")) {
       setEvents(events.filter((event) => event.id !== id))
     }
   }
@@ -121,16 +121,13 @@ export default function LifeSimulationPage() {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">残り経験回数シミュレーション</h1>
-          <p className="text-gray-600">
-            人生で大切なイベントがあと何回できるか計算して、優先順位を考えましょう
-          </p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">残り回数</h1>
         </div>
 
         {/* 生まれ年入力 */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
           <label htmlFor="birthYearSim" className="block text-sm font-medium text-gray-700 mb-2">
-            生まれ年を入力してください
+            生まれ年
           </label>
           <div className="flex gap-4">
             <input
@@ -140,12 +137,12 @@ export default function LifeSimulationPage() {
               max={currentYear}
               value={birthYear}
               onChange={(e) => setBirthYear(e.target.value)}
-              placeholder="例: 1990"
+              placeholder="1990"
               className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
             <div className="flex items-center gap-2 text-sm text-gray-500">
               <Calendar className="w-4 h-4" />
-              <span>平均寿命: {lifeExpectancy}歳</span>
+              <span>{lifeExpectancy}歳</span>
             </div>
           </div>
         </div>
@@ -159,7 +156,7 @@ export default function LifeSimulationPage() {
               className="flex items-center gap-2 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 shadow-sm"
             >
               <Plus className="w-5 h-5" />
-              ライフイベントを追加
+              追加
             </button>
           </div>
         )}
@@ -167,9 +164,7 @@ export default function LifeSimulationPage() {
         {/* フォーム */}
         {(showForm || editingEvent) && (
           <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <h2 className="text-xl font-semibold mb-4">
-              {editingEvent ? "ライフイベントを編集" : "新しいライフイベント"}
-            </h2>
+            <h2 className="text-xl font-semibold mb-4">{editingEvent ? "編集" : "新規"}</h2>
             <LifeEventForm
               initialData={editingEvent || undefined}
               onSubmit={editingEvent ? handleUpdateEvent : handleCreateEvent}
@@ -186,11 +181,7 @@ export default function LifeSimulationPage() {
           <div className="space-y-6">
             {sortedEvents.length === 0 ? (
               <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-                <p className="text-gray-500 mb-4">
-                  まだライフイベントが登録されていません。
-                  <br />
-                  大切なイベントを追加して、残り回数を確認しましょう。
-                </p>
+                <p className="text-gray-500 mb-4">データなし</p>
               </div>
             ) : (
               <>
@@ -199,12 +190,7 @@ export default function LifeSimulationPage() {
                   <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 flex items-start gap-3">
                     <AlertTriangle className="w-5 h-5 text-orange-600 mt-0.5" />
                     <div>
-                      <p className="font-medium text-orange-800">
-                        残り回数が少ないイベントがあります
-                      </p>
-                      <p className="text-sm text-orange-700 mt-1">
-                        優先的に計画を立てることをお勧めします
-                      </p>
+                      <p className="font-medium text-orange-800">残り少ない</p>
                     </div>
                   </div>
                 )}
@@ -226,9 +212,7 @@ export default function LifeSimulationPage() {
           </div>
         ) : (
           <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-            <p className="text-gray-500">
-              生まれ年を入力すると、ライフイベントの残り回数が表示されます
-            </p>
+            <p className="text-gray-500">生まれ年を入力</p>
           </div>
         )}
       </div>

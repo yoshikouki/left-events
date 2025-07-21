@@ -28,7 +28,7 @@ export function LifeEventForm({ initialData, onSubmit, onCancel }: LifeEventForm
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
         <label htmlFor="title" className="block text-sm font-medium mb-2">
-          イベント名 *
+          イベント
         </label>
         <input
           id="title"
@@ -37,7 +37,7 @@ export function LifeEventForm({ initialData, onSubmit, onCancel }: LifeEventForm
           value={formData.title}
           onChange={(e) => setFormData({ ...formData, title: e.target.value })}
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          placeholder="例：親と一緒に旅行する"
+          placeholder="親と旅行"
         />
       </div>
 
@@ -51,13 +51,13 @@ export function LifeEventForm({ initialData, onSubmit, onCancel }: LifeEventForm
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           rows={3}
-          placeholder="このイベントについての説明を記入"
+          placeholder="説明"
         />
       </div>
 
       <div>
         <label htmlFor="frequency" className="block text-sm font-medium mb-2">
-          頻度（年間の回数）*
+          頻度（年間）
         </label>
         <input
           id="frequency"
@@ -72,14 +72,12 @@ export function LifeEventForm({ initialData, onSubmit, onCancel }: LifeEventForm
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           placeholder="1"
         />
-        <p className="text-xs text-gray-500 mt-1">
-          例：年1回なら「1」、月1回なら「12」、週1回なら「52」
-        </p>
+        <p className="text-xs text-gray-500 mt-1">年1=1、月1=12、週1=52</p>
       </div>
 
       <div>
         <label htmlFor="lastOccurrence" className="block text-sm font-medium mb-2">
-          最後に行った日
+          最終日
         </label>
         <input
           id="lastOccurrence"
@@ -101,7 +99,7 @@ export function LifeEventForm({ initialData, onSubmit, onCancel }: LifeEventForm
 
       <div>
         <label htmlFor="importance" className="block text-sm font-medium mb-2">
-          重要度 *
+          重要度
         </label>
         <select
           id="importance"
@@ -111,9 +109,9 @@ export function LifeEventForm({ initialData, onSubmit, onCancel }: LifeEventForm
           }
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         >
-          <option value="high">高い</option>
-          <option value="medium">普通</option>
-          <option value="low">低い</option>
+          <option value="high">高</option>
+          <option value="medium">中</option>
+          <option value="low">低</option>
         </select>
       </div>
 
