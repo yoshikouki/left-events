@@ -1,6 +1,6 @@
 "use client"
 
-import { ArrowRight, BarChart3, BookOpen, Clock, Settings, Users } from "lucide-react"
+import { ArrowRight, BarChart3, BookOpen, Clock } from "lucide-react"
 import Link from "next/link"
 import { LifeCalculator } from "./(shared)/components/LifeCalculator"
 
@@ -20,24 +20,6 @@ export default function Home() {
         {/* 寿命計算機能 */}
         <div className="mb-12">
           <LifeCalculator />
-        </div>
-
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link
-            href="/settings"
-            className="inline-flex items-center px-8 py-4 text-lg font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <Settings className="w-5 h-5 mr-2" />
-            設定
-            <ArrowRight className="w-5 h-5 ml-2" />
-          </Link>
-          <Link
-            href="/life-simulation"
-            className="inline-flex items-center px-8 py-4 text-lg font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-          >
-            <Users className="w-5 h-5 mr-2" />
-            シミュレーション
-          </Link>
         </div>
       </section>
 
@@ -74,13 +56,6 @@ export default function Home() {
           <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
             限られた時間を意識して生きる
           </p>
-          <Link
-            href="/settings"
-            className="inline-flex items-center px-6 py-3 text-base font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            開始
-            <ArrowRight className="w-4 h-4 ml-2" />
-          </Link>
         </div>
       </section>
     </div>
