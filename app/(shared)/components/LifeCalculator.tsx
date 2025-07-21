@@ -1,9 +1,11 @@
 "use client"
 
-import { Calendar, Clock, Heart, Plus, Trash2, Users, X } from "lucide-react"
+import { Calendar, Clock, Heart, Plus, Trash2, X } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import { useEvents, usePersonEvents, usePersons } from "@/app/(shared)/hooks/useStorage"
 import type { Person, PersonEvent, RecurringEvent } from "@/app/(shared)/types/models"
+import { Select } from "./Select"
+import { TextInput } from "./TextInput"
 
 export function LifeCalculator() {
   const { persons, savePerson, deletePerson } = usePersons()
@@ -262,7 +264,7 @@ export function LifeCalculator() {
         <label htmlFor="birthYear" className="block text-sm font-medium text-gray-700 mb-2">
           生まれ年
         </label>
-        <input
+        <TextInput
           id="birthYear"
           type="number"
           min="1900"
@@ -270,7 +272,7 @@ export function LifeCalculator() {
           value={birthYear}
           onChange={(e) => handleBirthYearChange(e.target.value)}
           placeholder="1990"
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg"
+          className="text-lg"
         />
       </div>
 
@@ -334,19 +336,19 @@ export function LifeCalculator() {
             {showEventForm && (
               <div className="mb-4 p-4 bg-gray-50 rounded-lg">
                 <div className="flex gap-2">
-                  <input
+                  <TextInput
                     type="text"
                     placeholder="予定名"
                     value={newEventName}
                     onChange={(e) => setNewEventName(e.target.value)}
-                    className="flex-1 px-3 py-2 border rounded"
+                    className="flex-1"
                   />
-                  <input
+                  <TextInput
                     type="number"
                     placeholder="年間回数"
                     value={newEventFrequency}
                     onChange={(e) => setNewEventFrequency(e.target.value)}
-                    className="w-24 px-3 py-2 border rounded"
+                    className="w-24"
                   />
                   <button
                     type="button"
@@ -416,17 +418,17 @@ export function LifeCalculator() {
             {showPersonForm && (
               <div className="mb-4 p-4 bg-gray-50 rounded-lg space-y-2">
                 <div className="grid grid-cols-2 gap-2">
-                  <input
+                  <TextInput
                     type="text"
                     placeholder="名前（省略可）"
                     value={newPersonName}
                     onChange={(e) => setNewPersonName(e.target.value)}
-                    className="px-3 py-2 border rounded text-sm"
+                    className="text-sm"
                   />
-                  <select
+                  <Select
                     value={newPersonRelation}
                     onChange={(e) => setNewPersonRelation(e.target.value as Person["relation"])}
-                    className="px-3 py-2 border rounded text-sm"
+                    className="text-sm"
                   >
                     {Object.entries(relationLabels)
                       .filter(([key]) => key !== "self")
@@ -435,7 +437,7 @@ export function LifeCalculator() {
                           {label}
                         </option>
                       ))}
-                  </select>
+                  </Select>
                 </div>
                 <div className="flex gap-2">
                   <div className="flex gap-1">
@@ -462,12 +464,12 @@ export function LifeCalculator() {
                       生年
                     </button>
                   </div>
-                  <input
+                  <TextInput
                     type="number"
                     placeholder={ageInputMode === "age" ? "年齢" : "生まれ年"}
                     value={newPersonBirthYear}
                     onChange={(e) => setNewPersonBirthYear(e.target.value)}
-                    className="flex-1 px-3 py-2 border rounded text-sm"
+                    className="flex-1 text-sm"
                   />
                   <button
                     type="button"

@@ -3,6 +3,8 @@
 import { ArrowLeft, Plus, Save, Trash2, User } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
+import { Select } from "@/app/(shared)/components/Select"
+import { TextInput } from "@/app/(shared)/components/TextInput"
 import { useEvents, usePersons } from "@/app/(shared)/hooks/useStorage"
 import type { Person, RecurringEvent } from "@/app/(shared)/types/models"
 
@@ -121,32 +123,31 @@ export default function SettingsPage() {
             <div className="border-t pt-4">
               <h3 className="font-medium mb-3">新規追加</h3>
               <div className="space-y-3">
-                <input
+                <TextInput
                   type="text"
                   placeholder="名前（省略可）"
                   value={newPersonName}
                   onChange={(e) => setNewPersonName(e.target.value)}
-                  className="w-full px-3 py-2 border rounded-md"
                 />
                 <div className="flex gap-2">
-                  <input
+                  <TextInput
                     type="number"
                     placeholder="生まれ年"
                     value={newPersonBirthYear}
                     onChange={(e) => setNewPersonBirthYear(e.target.value)}
-                    className="flex-1 px-3 py-2 border rounded-md"
+                    className="flex-1"
                   />
-                  <select
+                  <Select
                     value={newPersonRelation}
                     onChange={(e) => setNewPersonRelation(e.target.value as Person["relation"])}
-                    className="flex-1 px-3 py-2 border rounded-md"
+                    className="flex-1"
                   >
                     {Object.entries(relationLabels).map(([value, label]) => (
                       <option key={value} value={value}>
                         {label}
                       </option>
                     ))}
-                  </select>
+                  </Select>
                 </div>
                 <button
                   type="button"
@@ -199,25 +200,23 @@ export default function SettingsPage() {
             <div className="border-t pt-4">
               <h3 className="font-medium mb-3">新規追加</h3>
               <div className="space-y-3">
-                <input
+                <TextInput
                   type="text"
                   placeholder="予定名"
                   value={newEventName}
                   onChange={(e) => setNewEventName(e.target.value)}
-                  className="w-full px-3 py-2 border rounded-md"
                 />
-                <input
+                <TextInput
                   type="number"
                   placeholder="年間回数"
                   value={newEventFrequency}
                   onChange={(e) => setNewEventFrequency(e.target.value)}
-                  className="w-full px-3 py-2 border rounded-md"
                 />
                 <textarea
                   placeholder="説明（省略可）"
                   value={newEventDescription}
                   onChange={(e) => setNewEventDescription(e.target.value)}
-                  className="w-full px-3 py-2 border rounded-md"
+                  className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed transition-colors"
                   rows={2}
                 />
                 <button
