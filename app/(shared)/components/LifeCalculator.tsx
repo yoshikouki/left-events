@@ -1,10 +1,9 @@
 "use client"
 
-import { Calendar, Clock, Heart, Plus, Trash2, X } from "lucide-react"
+import { Calendar, Check, Clock, Heart, Plus, Trash2, X } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import { useEvents, usePersonEvents, usePersons } from "@/app/(shared)/hooks/useStorage"
 import type { Person, PersonEvent, RecurringEvent } from "@/app/(shared)/types/models"
-import { FrequencySelect } from "./FrequencySelect"
 import { Select } from "./Select"
 import { TextInput } from "./TextInput"
 import { YearSelect } from "./YearSelect"
@@ -32,7 +31,12 @@ export function LifeCalculator() {
 
   // 新しい予定の入力
   const [newEventName, setNewEventName] = useState("")
-  const [newEventFrequency, setNewEventFrequency] = useState("12")
+  const [newEventInterval, setNewEventInterval] = useState<"year" | "month" | "week" | "day">(
+    "year",
+  )
+  const [newEventFrequency, setNewEventFrequency] = useState("1")
+  const [selectedPersonId, setSelectedPersonId] = useState<string>("") // 予定を追加する人物
+  const [eventUntilAge, setEventUntilAge] = useState<string>("") // 節目の年齢
 
   // 初回アクセス時のデフォルトデータ作成
   useEffect(() => {
@@ -124,33 +128,58 @@ export function LifeCalculator() {
 
   // 予定の追加
   const handleAddEvent = async () => {
-    if (!newEventName || !newEventFrequency || !self) return
+    if (!self) return
+    const targetPersonId = selectedPersonId || self.id
 
     const frequency = parseInt(newEventFrequency)
     if (Number.isNaN(frequency) || frequency <= 0) return
 
+    // 間隔を年間回数に変換
+    let annualFrequency: number
+    switch (newEventInterval) {
+      case "day":
+        annualFrequency = frequency * 365
+        break
+      case "week":
+        annualFrequency = frequency * 52
+        break
+      case "month":
+        annualFrequency = frequency * 12
+        break
+      case "year":
+      default:
+        annualFrequency = frequency
+        break
+    }
+
     const event: RecurringEvent = {
       id: Date.now().toString(),
-      name: newEventName,
-      frequency: frequency,
+      name:
+        newEventName ||
+        `${frequency}回/${newEventInterval === "year" ? "年" : newEventInterval === "month" ? "月" : newEventInterval === "week" ? "週" : "日"}`,
+      frequency: annualFrequency,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }
 
     await saveEvent(event)
 
-    // 自分と関連付け
+    // 選択された人物と関連付け
     const personEvent: PersonEvent = {
       id: Date.now().toString() + Math.random(),
-      personId: self.id,
+      personId: targetPersonId,
       eventId: event.id,
+      untilAge: eventUntilAge ? parseInt(eventUntilAge) : undefined,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }
     await savePersonEvent(personEvent)
 
     setNewEventName("")
-    setNewEventFrequency("12")
+    setNewEventInterval("year")
+    setNewEventFrequency("1")
+    setSelectedPersonId("")
+    setEventUntilAge("")
     setShowEventForm(false)
   }
 
@@ -228,12 +257,24 @@ export function LifeCalculator() {
         const personAge = currentYear - person.birthYear
         let yearsRemaining = 0
 
-        if (person.relation === "child") {
-          yearsRemaining = Math.max(0, 22 - personAge)
-        } else if (person.relation === "parent") {
-          yearsRemaining = Math.max(0, 85 - personAge)
+        // untilAgeが設定されている場合はそれを使用、そうでなければデフォルトの節目年齢を使用
+        if (pe.untilAge) {
+          yearsRemaining = Math.max(0, pe.untilAge - personAge)
         } else {
-          yearsRemaining = Math.min(calculations.healthyRemainingYears, 30)
+          if (person.relation === "child") {
+            yearsRemaining = Math.max(0, 18 - personAge) // 子供は18歳まで
+          } else if (person.relation === "parent") {
+            yearsRemaining = Math.max(0, 85 - personAge) // 親は85歳まで
+          } else if (person.relation === "partner") {
+            // パートナーは自分の健康寿命まで
+            yearsRemaining = Math.min(
+              calculations.healthyRemainingYears,
+              Math.max(0, healthyLifeExpectancy - personAge),
+            )
+          } else {
+            // その他は30年または健康寿命のいずれか短い方
+            yearsRemaining = Math.min(calculations.healthyRemainingYears, 30)
+          }
         }
 
         const remainingCount = Math.round(event.frequency * yearsRemaining)
@@ -324,8 +365,43 @@ export function LifeCalculator() {
             </div>
 
             {showEventForm && (
-              <div className="mb-4 p-4 bg-gray-50 rounded-lg">
+              <div className="mb-4 p-4 bg-gray-50 rounded-lg space-y-2">
                 <div className="flex gap-2">
+                  <Select
+                    value={selectedPersonId}
+                    onChange={(e) => setSelectedPersonId(e.target.value)}
+                    className="w-40"
+                  >
+                    <option value="">自分</option>
+                    {persons
+                      .filter((p) => p.relation !== "self")
+                      .map((person) => (
+                        <option key={person.id} value={person.id}>
+                          {person.name || relationLabels[person.relation]}
+                        </option>
+                      ))}
+                  </Select>
+                  <Select
+                    value={newEventInterval}
+                    onChange={(e) => setNewEventInterval(e.target.value as typeof newEventInterval)}
+                    className="w-24"
+                  >
+                    <option value="year">年</option>
+                    <option value="month">月</option>
+                    <option value="week">週</option>
+                    <option value="day">日</option>
+                  </Select>
+                  <Select
+                    value={newEventFrequency}
+                    onChange={(e) => setNewEventFrequency(e.target.value)}
+                    className="w-20"
+                  >
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 20, 24, 30, 50, 100].map((num) => (
+                      <option key={num} value={num}>
+                        {num}
+                      </option>
+                    ))}
+                  </Select>
                   <TextInput
                     type="text"
                     placeholder="予定名"
@@ -333,20 +409,30 @@ export function LifeCalculator() {
                     onChange={(e) => setNewEventName(e.target.value)}
                     className="flex-1"
                   />
-                  <div className="w-48">
-                    <FrequencySelect value={newEventFrequency} onChange={setNewEventFrequency} />
-                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <TextInput
+                    type="number"
+                    placeholder="何歳まで（省略可）"
+                    value={eventUntilAge}
+                    onChange={(e) => setEventUntilAge(e.target.value)}
+                    className="w-40"
+                    min="1"
+                    max="120"
+                  />
                   <button
                     type="button"
                     onClick={handleAddEvent}
                     className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                    aria-label="予定を追加"
                   >
-                    追加
+                    <Check className="w-5 h-5" />
                   </button>
                   <button
                     type="button"
                     onClick={() => setShowEventForm(false)}
                     className="px-3 py-2 text-gray-600 hover:text-gray-800"
+                    aria-label="キャンセル"
                   >
                     <X className="w-5 h-5" />
                   </button>
@@ -387,17 +473,17 @@ export function LifeCalculator() {
             </div>
           </div>
 
-          {/* 大切な人 */}
+          {/* 大切な人との時間 */}
           <div className="border-t pt-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">大切な人</h3>
+              <h3 className="text-lg font-semibold text-gray-800">大切な人との時間</h3>
               <button
                 type="button"
                 onClick={() => setShowPersonForm(!showPersonForm)}
                 className="text-blue-600 hover:text-blue-700 text-sm"
               >
                 <Plus className="w-4 h-4 inline-block mr-1" />
-                追加
+                人を追加
               </button>
             </div>
 
@@ -450,30 +536,33 @@ export function LifeCalculator() {
               </div>
             )}
 
-            <div className="space-y-2">
+            <div className="space-y-3">
               {persons
                 .filter((p) => p.relation !== "self")
                 .map((person) => {
                   const age = currentYear - person.birthYear
                   const personCounts = remainingCounts.filter((rc) => rc.person?.id === person.id)
+
+                  // デフォルトの節目年齢を取得
+                  let defaultMilestone = ""
+                  if (person.relation === "child") {
+                    defaultMilestone = "18歳まで"
+                  } else if (person.relation === "parent") {
+                    defaultMilestone = "85歳まで"
+                  }
+
                   return (
-                    <div
-                      key={person.id}
-                      className="flex items-center justify-between p-2 bg-gray-50 rounded group"
-                    >
-                      <div>
-                        <span className="font-medium">
-                          {person.name || relationLabels[person.relation]}
-                        </span>
-                        <span className="text-sm text-gray-600 ml-2">({age}歳)</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        {personCounts.length > 0 && (
-                          <span className="text-sm text-gray-600">
-                            {personCounts[0].event.name}: あと
-                            {personCounts[0].remainingCount.toLocaleString()}回
+                    <div key={person.id} className="bg-gray-50 rounded-lg p-4 group">
+                      <div className="flex items-center justify-between mb-2">
+                        <div>
+                          <span className="font-medium text-lg">
+                            {person.name || relationLabels[person.relation]}
                           </span>
-                        )}
+                          <span className="text-sm text-gray-600 ml-2">({age}歳)</span>
+                          {defaultMilestone && (
+                            <span className="text-xs text-gray-500 ml-2">{defaultMilestone}</span>
+                          )}
+                        </div>
                         <button
                           type="button"
                           onClick={() => deletePerson(person.id)}
@@ -482,6 +571,34 @@ export function LifeCalculator() {
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
+                      {personCounts.length > 0 ? (
+                        <div className="space-y-2">
+                          {personCounts.map((count) => (
+                            <div
+                              key={count.personEvent.id}
+                              className="flex items-center justify-between text-sm"
+                            >
+                              <span className="text-gray-700">
+                                {count.event.name}
+                                {count.personEvent.untilAge && (
+                                  <span className="text-xs text-gray-500 ml-1">
+                                    ({count.personEvent.untilAge}歳まで)
+                                  </span>
+                                )}
+                              </span>
+                              <span
+                                className={`font-semibold ${
+                                  count.remainingCount < 20 ? "text-red-600" : "text-gray-900"
+                                }`}
+                              >
+                                あと約 {count.remainingCount.toLocaleString()} 回
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-sm text-gray-500">予定が登録されていません</p>
+                      )}
                     </div>
                   )
                 })}
