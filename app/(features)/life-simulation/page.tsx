@@ -1,6 +1,6 @@
 "use client"
 
-import { AlertTriangle, Calendar, Plus } from "lucide-react"
+import { AlertTriangle, Calendar, Plus, Users, X } from "lucide-react"
 import { useMemo, useState } from "react"
 import type { LifeEvent } from "@/app/(shared)/types"
 import { LifeEventCard } from "./components/LifeEventCard"
@@ -42,14 +42,26 @@ const initialEvents: LifeEvent[] = [
   },
 ]
 
+interface FamilyMember {
+  id: string
+  name: string
+  relation: string
+  age: number
+}
+
 export default function LifeSimulationPage() {
-  const [birthYear, setBirthYear] = useState<string>("")
+  const currentYear = new Date().getFullYear()
+  const defaultAge = 35
+  const defaultBirthYear = (currentYear - defaultAge).toString()
+
+  const [birthYear, setBirthYear] = useState<string>(defaultBirthYear)
   const [events, setEvents] = useState<LifeEvent[]>(initialEvents)
   const [showForm, setShowForm] = useState(false)
   const [editingEvent, setEditingEvent] = useState<LifeEvent | null>(null)
+  const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([])
 
-  const currentYear = new Date().getFullYear()
   const lifeExpectancy = 85
+  const healthyLifeExpectancy = 72
 
   const remainingCounts = useMemo(() => {
     if (!birthYear || parseInt(birthYear) < 1900 || parseInt(birthYear) > currentYear) {
@@ -59,23 +71,40 @@ export default function LifeSimulationPage() {
     const birthYearNum = parseInt(birthYear)
     const currentAge = currentYear - birthYearNum
     const remainingYears = Math.max(0, lifeExpectancy - currentAge)
+    const healthyRemainingYears = Math.max(0, healthyLifeExpectancy - currentAge)
 
     const counts: Record<string, number> = {}
     events.forEach((event) => {
-      // 特殊なケースの処理
-      if (event.title.includes("子ども") && currentAge > 60) {
-        counts[event.id] = 0 // 子ども関連のイベントは年齢によって0になる
-      } else if (event.title.includes("親") && currentAge > 50) {
-        // 親関連のイベントは親の寿命を考慮
-        const parentRemainingYears = Math.max(0, 20 - (currentAge - 50))
-        counts[event.id] = Math.round(event.averageFrequency * parentRemainingYears)
+      // 家族メンバーとの関連イベント
+      const relatedMember = familyMembers.find(
+        (member) =>
+          event.title.includes(member.name) ||
+          (member.relation === "子供" && event.title.includes("子")) ||
+          (member.relation === "親" && event.title.includes("親")),
+      )
+
+      if (relatedMember) {
+        if (relatedMember.relation === "子供") {
+          const yearsUntilGraduation = Math.max(0, 22 - relatedMember.age)
+          counts[event.id] = Math.round(
+            event.averageFrequency * Math.min(yearsUntilGraduation, healthyRemainingYears),
+          )
+        } else if (relatedMember.relation === "親") {
+          const parentRemainingYears = Math.max(0, 85 - relatedMember.age)
+          counts[event.id] = Math.round(
+            event.averageFrequency * Math.min(parentRemainingYears, healthyRemainingYears),
+          )
+        } else {
+          counts[event.id] = Math.round(event.averageFrequency * healthyRemainingYears)
+        }
       } else {
+        // 通常のイベント
         counts[event.id] = Math.round(event.averageFrequency * remainingYears)
       }
     })
 
     return counts
-  }, [birthYear, events, currentYear])
+  }, [birthYear, events, currentYear, familyMembers])
 
   const handleCreateEvent = (data: Partial<LifeEvent>) => {
     const newEvent: LifeEvent = {
@@ -142,8 +171,93 @@ export default function LifeSimulationPage() {
             />
             <div className="flex items-center gap-2 text-sm text-gray-500">
               <Calendar className="w-4 h-4" />
-              <span>{lifeExpectancy}歳</span>
+              <span>
+                平均{lifeExpectancy}歳 / 健康{healthyLifeExpectancy}歳
+              </span>
             </div>
+          </div>
+        </div>
+
+        {/* 家族メンバー入力 */}
+        <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <Users className="w-5 h-5" />
+            大切な人
+          </h3>
+          <div className="space-y-3">
+            {familyMembers.map((member) => (
+              <div
+                key={member.id}
+                className="flex items-center justify-between bg-gray-50 p-2 rounded"
+              >
+                <span className="text-sm">
+                  {member.name} ({member.relation}, {member.age}歳)
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setFamilyMembers(familyMembers.filter((m) => m.id !== member.id))}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+            <div className="grid grid-cols-3 gap-2">
+              <input
+                type="text"
+                placeholder="名前"
+                className="px-3 py-2 border border-gray-300 rounded text-sm"
+                id="family-name"
+              />
+              <select
+                className="px-3 py-2 border border-gray-300 rounded text-sm"
+                id="family-relation"
+              >
+                <option value="">関係</option>
+                <option value="配偶者">配偶者</option>
+                <option value="子供">子供</option>
+                <option value="親">親</option>
+                <option value="兄弟">兄弟</option>
+                <option value="友人">友人</option>
+              </select>
+              <input
+                type="number"
+                placeholder="年齢"
+                min="0"
+                max="120"
+                className="px-3 py-2 border border-gray-300 rounded text-sm"
+                id="family-age"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                const nameInput = document.getElementById("family-name") as HTMLInputElement
+                const relationInput = document.getElementById(
+                  "family-relation",
+                ) as HTMLSelectElement
+                const ageInput = document.getElementById("family-age") as HTMLInputElement
+
+                if (nameInput.value && relationInput.value && ageInput.value) {
+                  setFamilyMembers([
+                    ...familyMembers,
+                    {
+                      id: Date.now().toString(),
+                      name: nameInput.value,
+                      relation: relationInput.value,
+                      age: parseInt(ageInput.value),
+                    },
+                  ])
+                  nameInput.value = ""
+                  relationInput.value = ""
+                  ageInput.value = ""
+                }
+              }}
+              className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
+            >
+              <Plus className="w-4 h-4" />
+              追加
+            </button>
           </div>
         </div>
 
