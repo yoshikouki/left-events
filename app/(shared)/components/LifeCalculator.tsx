@@ -1,6 +1,6 @@
 "use client"
 
-import { Calendar, Clock, Heart, Users } from "lucide-react"
+import { Calendar, Clock, Heart, Plus, Users, X } from "lucide-react"
 import { useMemo, useState } from "react"
 
 interface LifeEvent {
@@ -10,10 +10,25 @@ interface LifeEvent {
   remainingCount?: number
 }
 
+interface FamilyMember {
+  id: string
+  name: string
+  relation: string
+  birthYear: number
+  age?: number
+}
+
 export function LifeCalculator() {
   const currentYear = new Date().getFullYear()
-  const [birthYear, setBirthYear] = useState<string>("")
+  const defaultAge = 35
+  const defaultBirthYear = (currentYear - defaultAge).toString()
+  const [birthYear, setBirthYear] = useState<string>(defaultBirthYear)
+  const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([])
+  const [newMemberName, setNewMemberName] = useState("")
+  const [newMemberRelation, setNewMemberRelation] = useState("")
+  const [newMemberAge, setNewMemberAge] = useState("")
   const lifeExpectancy = 85
+  const healthyLifeExpectancy = 72 // 健康寿命
 
   const calculations = useMemo(() => {
     if (!birthYear || parseInt(birthYear) < 1900 || parseInt(birthYear) > currentYear) {
@@ -23,6 +38,7 @@ export function LifeCalculator() {
     const birthYearNum = parseInt(birthYear)
     const currentAge = currentYear - birthYearNum
     const remainingYears = Math.max(0, lifeExpectancy - currentAge)
+    const healthyRemainingYears = Math.max(0, healthyLifeExpectancy - currentAge)
     const remainingDays = remainingYears * 365
     const remainingWeeks = remainingYears * 52
     const remainingMonths = remainingYears * 12
@@ -55,15 +71,72 @@ export function LifeCalculator() {
       },
     ]
 
+    // 家族との残り時間計算
+    const familyEvents: LifeEvent[] = familyMembers.map((member) => {
+      const memberAge = member.age || currentYear - member.birthYear
+      let remainingWithMember = 0
+      let frequency = 12 // 月1回会うと仮定
+
+      if (member.relation === "子供") {
+        // 22歳で卒業と仮定
+        const yearsUntilGraduation = Math.max(0, 22 - memberAge)
+        remainingWithMember = Math.min(yearsUntilGraduation, healthyRemainingYears) * frequency * 4 // 週1回会う
+        frequency = 48
+      } else if (member.relation === "親") {
+        // 親の平均寿命を考慮
+        const parentRemainingYears = Math.max(0, 85 - memberAge)
+        remainingWithMember = Math.min(parentRemainingYears, healthyRemainingYears) * frequency
+      } else if (member.relation === "配偶者") {
+        // 健康寿命まで一緒に過ごすと仮定
+        remainingWithMember = healthyRemainingYears * 365 // 毎日一緒
+        frequency = 365
+      } else {
+        // その他の家族
+        remainingWithMember = Math.min(remainingYears, 30) * frequency // 30年間会うと仮定
+      }
+
+      return {
+        name: `${member.name}と会う`,
+        frequency,
+        icon: <Users className="w-4 h-4 text-blue-500" />,
+        remainingCount: Math.round(remainingWithMember),
+      }
+    })
+
     return {
       currentAge,
       remainingYears,
+      healthyRemainingYears,
       remainingDays,
       remainingWeeks,
       remainingMonths,
       lifeEvents,
+      familyEvents,
     }
-  }, [birthYear, currentYear])
+  }, [birthYear, currentYear, familyMembers])
+
+  const handleAddFamilyMember = () => {
+    if (newMemberName && newMemberRelation && newMemberAge) {
+      const memberBirthYear = currentYear - parseInt(newMemberAge)
+      setFamilyMembers([
+        ...familyMembers,
+        {
+          id: Date.now().toString(),
+          name: newMemberName,
+          relation: newMemberRelation,
+          birthYear: memberBirthYear,
+          age: parseInt(newMemberAge),
+        },
+      ])
+      setNewMemberName("")
+      setNewMemberRelation("")
+      setNewMemberAge("")
+    }
+  }
+
+  const handleRemoveFamilyMember = (id: string) => {
+    setFamilyMembers(familyMembers.filter((member) => member.id !== id))
+  }
 
   return (
     <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 max-w-2xl mx-auto">
@@ -92,7 +165,9 @@ export function LifeCalculator() {
               現在{" "}
               <span className="font-bold text-2xl text-gray-900">{calculations.currentAge}</span> 歳
             </p>
-            <p className="text-sm text-gray-500 mt-1">（平均{lifeExpectancy}歳）</p>
+            <p className="text-sm text-gray-500 mt-1">
+              平均{lifeExpectancy}歳 / 健康{healthyLifeExpectancy}歳
+            </p>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -140,6 +215,92 @@ export function LifeCalculator() {
                   </span>
                 </div>
               ))}
+            </div>
+          </div>
+
+          {calculations.familyEvents.length > 0 && (
+            <div className="border-t pt-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">家族との時間</h3>
+              <div className="space-y-3">
+                {calculations.familyEvents.map((event) => (
+                  <div key={event.name} className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      {event.icon}
+                      <span className="text-gray-700">{event.name}</span>
+                    </div>
+                    <span
+                      className={`font-bold text-lg ${
+                        event.remainingCount && event.remainingCount < 100
+                          ? "text-red-600"
+                          : "text-gray-900"
+                      }`}
+                    >
+                      あと約 {event.remainingCount?.toLocaleString() || "0"} 回
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="border-t pt-6">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">大切な人を追加</h3>
+            <div className="space-y-3">
+              {familyMembers.map((member) => (
+                <div
+                  key={member.id}
+                  className="flex items-center justify-between bg-gray-50 p-2 rounded"
+                >
+                  <span className="text-sm">
+                    {member.name} ({member.relation}, {member.age}歳)
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveFamilyMember(member.id)}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+              <div className="grid grid-cols-3 gap-2">
+                <input
+                  type="text"
+                  value={newMemberName}
+                  onChange={(e) => setNewMemberName(e.target.value)}
+                  placeholder="名前"
+                  className="px-3 py-2 border border-gray-300 rounded text-sm"
+                />
+                <select
+                  value={newMemberRelation}
+                  onChange={(e) => setNewMemberRelation(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded text-sm"
+                >
+                  <option value="">関係</option>
+                  <option value="配偶者">配偶者</option>
+                  <option value="子供">子供</option>
+                  <option value="親">親</option>
+                  <option value="兄弟">兄弟</option>
+                  <option value="友人">友人</option>
+                </select>
+                <input
+                  type="number"
+                  value={newMemberAge}
+                  onChange={(e) => setNewMemberAge(e.target.value)}
+                  placeholder="年齢"
+                  min="0"
+                  max="120"
+                  className="px-3 py-2 border border-gray-300 rounded text-sm"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={handleAddFamilyMember}
+                className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
+              >
+                <Plus className="w-4 h-4" />
+                追加
+              </button>
             </div>
           </div>
 
