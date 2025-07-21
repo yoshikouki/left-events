@@ -48,6 +48,12 @@ export default function RootLayout({
                   >
                     経験の記録
                   </a>
+                  <a
+                    href="/visualization"
+                    className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900 hover:text-gray-700"
+                  >
+                    可視化
+                  </a>
                 </div>
               </div>
             </div>
