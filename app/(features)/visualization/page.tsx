@@ -1,5 +1,6 @@
 "use client"
 
+import { ArrowRight, BookOpen, Calendar, MapPin, Users } from "lucide-react"
 import { useMemo, useState } from "react"
 import type { Experience } from "@/app/(shared)/types"
 import { ExperienceChart } from "./components/ExperienceChart"
@@ -46,28 +47,28 @@ export default function VisualizationPage() {
             title="総経験数"
             value={stats.total}
             description="記録された経験"
-            icon="📚"
+            icon={BookOpen}
             color="blue"
           />
           <StatCard
             title="今年の経験"
             value={stats.thisYear}
             description="今年記録した数"
-            icon="📅"
+            icon={Calendar}
             color="green"
           />
           <StatCard
             title="誰かと共有"
             value={stats.withOthers}
             description="誰かと一緒の経験"
-            icon="👥"
+            icon={Users}
             color="purple"
           />
           <StatCard
             title="訪れた場所"
             value={stats.uniqueLocations}
             description="ユニークな場所数"
-            icon="📍"
+            icon={MapPin}
             color="yellow"
           />
         </div>
@@ -88,9 +89,10 @@ export default function VisualizationPage() {
             </p>
             <a
               href="/experiences"
-              className="inline-flex items-center px-6 py-3 text-base font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+              className="inline-flex items-center gap-2 px-6 py-3 text-base font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
             >
               経験を記録する
+              <ArrowRight className="w-4 h-4" />
             </a>
           </div>
         )}

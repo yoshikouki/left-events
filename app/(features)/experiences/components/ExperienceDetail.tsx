@@ -1,5 +1,6 @@
 "use client"
 
+import { Edit, Lock, MapPin, Share2, X } from "lucide-react"
 import type { Experience } from "@/app/(shared)/types"
 
 interface ExperienceDetailProps {
@@ -25,9 +26,9 @@ export function ExperienceDetail({ experience, onClose, onEdit, onShare }: Exper
             <button
               type="button"
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 text-2xl leading-none"
+              className="text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-100"
             >
-              ×
+              <X className="w-5 h-5" />
             </button>
           </div>
         </div>
@@ -45,8 +46,9 @@ export function ExperienceDetail({ experience, onClose, onEdit, onShare }: Exper
             </span>
             <span className="text-gray-600">{formatDate(experience.date)}</span>
             {experience.isPrivate && (
-              <span className="text-gray-400" title="プライベート">
-                🔒 プライベート
+              <span className="flex items-center gap-1 text-gray-400" title="プライベート">
+                <Lock className="w-4 h-4" />
+                プライベート
               </span>
             )}
           </div>
@@ -82,7 +84,10 @@ export function ExperienceDetail({ experience, onClose, onEdit, onShare }: Exper
           {experience.location && (
             <div>
               <h3 className="font-semibold mb-2">場所</h3>
-              <p className="text-gray-700">📍 {experience.location}</p>
+              <p className="flex items-center gap-2 text-gray-700">
+                <MapPin className="w-4 h-4" />
+                {experience.location}
+              </p>
             </div>
           )}
 
@@ -132,8 +137,9 @@ export function ExperienceDetail({ experience, onClose, onEdit, onShare }: Exper
               <button
                 type="button"
                 onClick={onEdit}
-                className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
               >
+                <Edit className="w-4 h-4" />
                 編集
               </button>
             )}
@@ -141,8 +147,9 @@ export function ExperienceDetail({ experience, onClose, onEdit, onShare }: Exper
               <button
                 type="button"
                 onClick={onShare}
-                className="flex-1 px-4 py-2 border border-blue-500 text-blue-500 rounded-lg hover:bg-blue-50"
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 border border-blue-500 text-blue-500 rounded-lg hover:bg-blue-50"
               >
+                <Share2 className="w-4 h-4" />
                 共有
               </button>
             )}

@@ -1,3 +1,4 @@
+import { Edit2, Lock, MapPin, Trash2, Users } from "lucide-react"
 import type { Experience } from "@/app/(shared)/types"
 
 interface ExperienceCardProps {
@@ -34,8 +35,8 @@ export function ExperienceCard({ experience, onClick, onEdit, onDelete }: Experi
             {experience.category.emoji} {experience.category.name}
           </span>
           {experience.isPrivate && (
-            <span className="text-gray-400" title="プライベート">
-              🔒
+            <span title="プライベート">
+              <Lock className="w-4 h-4 text-gray-400" />
             </span>
           )}
         </div>
@@ -48,7 +49,7 @@ export function ExperienceCard({ experience, onClick, onEdit, onDelete }: Experi
       <div className="space-y-3">
         {experience.participants && experience.participants.length > 0 && (
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-500">一緒に:</span>
+            <Users className="w-4 h-4 text-gray-500" />
             <div className="flex flex-wrap gap-1">
               {experience.participants.map((participant) => (
                 <span
@@ -64,7 +65,7 @@ export function ExperienceCard({ experience, onClick, onEdit, onDelete }: Experi
 
         {experience.location && (
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-500">📍</span>
+            <MapPin className="w-4 h-4 text-gray-500" />
             <span className="text-sm text-gray-700">{experience.location}</span>
           </div>
         )}
@@ -92,8 +93,9 @@ export function ExperienceCard({ experience, onClick, onEdit, onDelete }: Experi
                 e.stopPropagation()
                 onEdit()
               }}
-              className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800"
+              className="flex items-center gap-1 px-3 py-1 text-sm text-gray-600 hover:text-gray-800"
             >
+              <Edit2 className="w-3 h-3" />
               編集
             </button>
           )}
@@ -104,8 +106,9 @@ export function ExperienceCard({ experience, onClick, onEdit, onDelete }: Experi
                 e.stopPropagation()
                 onDelete()
               }}
-              className="px-3 py-1 text-sm text-red-600 hover:text-red-800"
+              className="flex items-center gap-1 px-3 py-1 text-sm text-red-600 hover:text-red-800"
             >
+              <Trash2 className="w-3 h-3" />
               削除
             </button>
           )}

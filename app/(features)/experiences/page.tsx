@@ -1,5 +1,6 @@
 "use client"
 
+import { Plus } from "lucide-react"
 import { useState } from "react"
 import type { Experience } from "@/app/(shared)/types"
 import { ExperienceDetail } from "./components/ExperienceDetail"
@@ -69,8 +70,9 @@ export default function ExperiencesPage() {
             <button
               type="button"
               onClick={() => setShowForm(true)}
-              className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 shadow-sm"
+              className="flex items-center gap-2 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 shadow-sm"
             >
+              <Plus className="w-5 h-5" />
               新しい経験を記録
             </button>
           </div>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
+import { BarChart3, BookOpen, Home } from "lucide-react"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,20 +39,23 @@ export default function RootLayout({
                 <div className="ml-6 flex space-x-8">
                   <a
                     href="/"
-                    className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900 hover:text-gray-700"
+                    className="inline-flex items-center gap-1 px-1 pt-1 text-sm font-medium text-gray-900 hover:text-gray-700"
                   >
+                    <Home className="w-4 h-4" />
                     ホーム
                   </a>
                   <a
                     href="/experiences"
-                    className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900 hover:text-gray-700"
+                    className="inline-flex items-center gap-1 px-1 pt-1 text-sm font-medium text-gray-900 hover:text-gray-700"
                   >
+                    <BookOpen className="w-4 h-4" />
                     経験の記録
                   </a>
                   <a
                     href="/visualization"
-                    className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900 hover:text-gray-700"
+                    className="inline-flex items-center gap-1 px-1 pt-1 text-sm font-medium text-gray-900 hover:text-gray-700"
                   >
+                    <BarChart3 className="w-4 h-4" />
                     可視化
                   </a>
                 </div>

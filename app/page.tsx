@@ -1,3 +1,4 @@
+import { ArrowRight, BarChart3, BookOpen, Clock } from "lucide-react"
 import Link from "next/link"
 
 export default function Home() {
@@ -19,6 +20,7 @@ export default function Home() {
               className="inline-flex items-center px-8 py-4 text-lg font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
             >
               経験を記録する
+              <ArrowRight className="w-5 h-5 ml-2" />
             </Link>
             <button
               type="button"
@@ -37,21 +39,21 @@ export default function Home() {
         <div className="grid md:grid-cols-3 gap-8">
           <div className="text-center">
             <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-2xl">📝</span>
+              <BookOpen className="w-8 h-8 text-blue-600" />
             </div>
             <h3 className="text-xl font-semibold mb-2">経験を記録</h3>
             <p className="text-gray-600">写真・感情・一緒にいた人など、大切な瞬間の詳細を記録</p>
           </div>
           <div className="text-center">
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-2xl">📊</span>
+              <BarChart3 className="w-8 h-8 text-green-600" />
             </div>
             <h3 className="text-xl font-semibold mb-2">経験を可視化</h3>
             <p className="text-gray-600">カテゴリ別の分析で、人生のバランスを確認</p>
           </div>
           <div className="text-center">
             <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-2xl">⏳</span>
+              <Clock className="w-8 h-8 text-purple-600" />
             </div>
             <h3 className="text-xl font-semibold mb-2">残り回数を知る</h3>
             <p className="text-gray-600">「あと何回」という視点で、経験の価値を再認識</p>
@@ -71,6 +73,7 @@ export default function Home() {
             className="inline-flex items-center px-6 py-3 text-base font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
           >
             今すぐ始める
+            <ArrowRight className="w-4 h-4 ml-2" />
           </Link>
         </div>
       </section>

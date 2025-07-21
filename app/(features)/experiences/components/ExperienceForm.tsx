@@ -1,5 +1,6 @@
 "use client"
 
+import { Plus, Save, X } from "lucide-react"
 import { useState } from "react"
 import type { Experience } from "@/app/(shared)/types"
 import { DEFAULT_CATEGORIES } from "@/app/(shared)/types"
@@ -160,8 +161,9 @@ export function ExperienceForm({ initialData, onSubmit, onCancel }: ExperienceFo
             <button
               type="button"
               onClick={addParticipant}
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+              className="flex items-center gap-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
             >
+              <Plus className="w-4 h-4" />
               追加
             </button>
           </div>
@@ -175,9 +177,9 @@ export function ExperienceForm({ initialData, onSubmit, onCancel }: ExperienceFo
                 <button
                   type="button"
                   onClick={() => removeParticipant(participant.id)}
-                  className="text-gray-500 hover:text-gray-700"
+                  className="text-gray-500 hover:text-gray-700 p-0.5"
                 >
-                  ×
+                  <X className="w-3 h-3" />
                 </button>
               </span>
             ))}
@@ -219,8 +221,9 @@ export function ExperienceForm({ initialData, onSubmit, onCancel }: ExperienceFo
             <button
               type="button"
               onClick={addEmotion}
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+              className="flex items-center gap-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
             >
+              <Plus className="w-4 h-4" />
               追加
             </button>
           </div>
@@ -234,9 +237,9 @@ export function ExperienceForm({ initialData, onSubmit, onCancel }: ExperienceFo
                 <button
                   type="button"
                   onClick={() => removeEmotion(emotion)}
-                  className="text-blue-500 hover:text-blue-700"
+                  className="text-blue-500 hover:text-blue-700 p-0.5"
                 >
-                  ×
+                  <X className="w-3 h-3" />
                 </button>
               </span>
             ))}
@@ -260,8 +263,9 @@ export function ExperienceForm({ initialData, onSubmit, onCancel }: ExperienceFo
         <button
           type="submit"
           disabled={isSubmitting}
-          className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
         >
+          <Save className="w-4 h-4" />
           {isSubmitting ? "保存中..." : "保存"}
         </button>
         {onCancel && (
