@@ -4,8 +4,10 @@ import { Calendar, Clock, Heart, Plus, Trash2, X } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import { useEvents, usePersonEvents, usePersons } from "@/app/(shared)/hooks/useStorage"
 import type { Person, PersonEvent, RecurringEvent } from "@/app/(shared)/types/models"
+import { FrequencySelect } from "./FrequencySelect"
 import { Select } from "./Select"
 import { TextInput } from "./TextInput"
+import { YearSelect } from "./YearSelect"
 
 export function LifeCalculator() {
   const { persons, savePerson, deletePerson } = usePersons()
@@ -27,7 +29,6 @@ export function LifeCalculator() {
   const [newPersonName, setNewPersonName] = useState("")
   const [newPersonBirthYear, setNewPersonBirthYear] = useState("")
   const [newPersonRelation, setNewPersonRelation] = useState<Person["relation"]>("parent")
-  const [ageInputMode, setAgeInputMode] = useState<"age" | "year">("age")
 
   // 新しい予定の入力
   const [newEventName, setNewEventName] = useState("")
@@ -102,16 +103,9 @@ export function LifeCalculator() {
 
   // 大切な人の追加
   const handleAddPerson = async () => {
-    if (!newPersonRelation) return
+    if (!newPersonRelation || !newPersonBirthYear) return
 
-    let birthYearNum: number
-    if (ageInputMode === "age" && newPersonBirthYear) {
-      birthYearNum = currentYear - parseInt(newPersonBirthYear)
-    } else if (ageInputMode === "year" && newPersonBirthYear) {
-      birthYearNum = parseInt(newPersonBirthYear)
-    } else {
-      return
-    }
+    const birthYearNum = parseInt(newPersonBirthYear)
 
     const person: Person = {
       id: Date.now().toString(),
@@ -132,10 +126,13 @@ export function LifeCalculator() {
   const handleAddEvent = async () => {
     if (!newEventName || !newEventFrequency || !self) return
 
+    const frequency = parseInt(newEventFrequency)
+    if (Number.isNaN(frequency) || frequency <= 0) return
+
     const event: RecurringEvent = {
       id: Date.now().toString(),
       name: newEventName,
-      frequency: parseInt(newEventFrequency),
+      frequency: frequency,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }
@@ -261,17 +258,10 @@ export function LifeCalculator() {
       <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">残り時間</h2>
 
       <div className="mb-8">
-        <label htmlFor="birthYear" className="block text-sm font-medium text-gray-700 mb-2">
-          生まれ年
-        </label>
-        <TextInput
-          id="birthYear"
-          type="number"
-          min="1900"
-          max={currentYear}
+        <YearSelect
+          label="生まれ年"
           value={birthYear}
           onChange={(e) => handleBirthYearChange(e.target.value)}
-          placeholder="1990"
           className="text-lg"
         />
       </div>
@@ -343,13 +333,9 @@ export function LifeCalculator() {
                     onChange={(e) => setNewEventName(e.target.value)}
                     className="flex-1"
                   />
-                  <TextInput
-                    type="number"
-                    placeholder="年間回数"
-                    value={newEventFrequency}
-                    onChange={(e) => setNewEventFrequency(e.target.value)}
-                    className="w-24"
-                  />
+                  <div className="w-48">
+                    <FrequencySelect value={newEventFrequency} onChange={setNewEventFrequency} />
+                  </div>
                   <button
                     type="button"
                     onClick={handleAddEvent}
@@ -440,36 +426,11 @@ export function LifeCalculator() {
                   </Select>
                 </div>
                 <div className="flex gap-2">
-                  <div className="flex gap-1">
-                    <button
-                      type="button"
-                      onClick={() => setAgeInputMode("age")}
-                      className={`px-2 py-1 text-xs rounded ${
-                        ageInputMode === "age"
-                          ? "bg-blue-500 text-white"
-                          : "bg-gray-200 text-gray-700"
-                      }`}
-                    >
-                      年齢
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setAgeInputMode("year")}
-                      className={`px-2 py-1 text-xs rounded ${
-                        ageInputMode === "year"
-                          ? "bg-blue-500 text-white"
-                          : "bg-gray-200 text-gray-700"
-                      }`}
-                    >
-                      生年
-                    </button>
-                  </div>
-                  <TextInput
-                    type="number"
-                    placeholder={ageInputMode === "age" ? "年齢" : "生まれ年"}
+                  <YearSelect
                     value={newPersonBirthYear}
                     onChange={(e) => setNewPersonBirthYear(e.target.value)}
                     className="flex-1 text-sm"
+                    placeholder="生年"
                   />
                   <button
                     type="button"

@@ -1,7 +1,6 @@
 "use client"
 
-import { ArrowRight, BarChart3, BookOpen, Clock } from "lucide-react"
-import Link from "next/link"
+import { BarChart3, BookOpen, Clock } from "lucide-react"
 import { LifeCalculator } from "./(shared)/components/LifeCalculator"
 
 export default function Home() {
