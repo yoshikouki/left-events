@@ -1,11 +1,12 @@
 import { ArrowRight, BarChart3, BookOpen, Clock } from "lucide-react"
 import Link from "next/link"
+import { LifeCalculator } from "./(shared)/components/LifeCalculator"
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
-        <div className="text-center">
+        <div className="text-center mb-12">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
             人生の経験を、
             <br />
@@ -14,21 +15,27 @@ export default function Home() {
           <p className="text-xl sm:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto">
             経験の価値と有限性に気づき、これからの限られた機会を主体的に選択・共有できるアプリケーション
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/experiences"
-              className="inline-flex items-center px-8 py-4 text-lg font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              経験を記録する
-              <ArrowRight className="w-5 h-5 ml-2" />
-            </Link>
-            <button
-              type="button"
-              className="inline-flex items-center px-8 py-4 text-lg font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              使い方を見る
-            </button>
-          </div>
+        </div>
+
+        {/* 寿命計算機能 */}
+        <div className="mb-12">
+          <LifeCalculator />
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Link
+            href="/experiences"
+            className="inline-flex items-center px-8 py-4 text-lg font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            経験を記録する
+            <ArrowRight className="w-5 h-5 ml-2" />
+          </Link>
+          <button
+            type="button"
+            className="inline-flex items-center px-8 py-4 text-lg font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            使い方を見る
+          </button>
         </div>
       </section>
 
