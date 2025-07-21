@@ -59,6 +59,7 @@ export default function LifeSimulationPage() {
   const [showForm, setShowForm] = useState(false)
   const [editingEvent, setEditingEvent] = useState<LifeEvent | null>(null)
   const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([])
+  const [ageInputMode, setAgeInputMode] = useState<"age" | "year">("age")
 
   const lifeExpectancy = 85
   const healthyLifeExpectancy = 72
@@ -191,7 +192,7 @@ export default function LifeSimulationPage() {
                 className="flex items-center justify-between bg-gray-50 p-2 rounded"
               >
                 <span className="text-sm">
-                  {member.name} ({member.relation}, {member.age}歳)
+                  {member.name || member.relation} ({member.age}歳)
                 </span>
                 <button
                   type="button"
@@ -202,32 +203,60 @@ export default function LifeSimulationPage() {
                 </button>
               </div>
             ))}
-            <div className="grid grid-cols-3 gap-2">
-              <input
-                type="text"
-                placeholder="名前"
-                className="px-3 py-2 border border-gray-300 rounded text-sm"
-                id="family-name"
-              />
-              <select
-                className="px-3 py-2 border border-gray-300 rounded text-sm"
-                id="family-relation"
-              >
-                <option value="">関係</option>
-                <option value="配偶者">配偶者</option>
-                <option value="子供">子供</option>
-                <option value="親">親</option>
-                <option value="兄弟">兄弟</option>
-                <option value="友人">友人</option>
-              </select>
-              <input
-                type="number"
-                placeholder="年齢"
-                min="0"
-                max="120"
-                className="px-3 py-2 border border-gray-300 rounded text-sm"
-                id="family-age"
-              />
+            <div className="space-y-2">
+              <div className="grid grid-cols-2 gap-2">
+                <input
+                  type="text"
+                  placeholder="名前（省略可）"
+                  className="px-3 py-2 border border-gray-300 rounded text-sm"
+                  id="family-name"
+                />
+                <select
+                  className="px-3 py-2 border border-gray-300 rounded text-sm"
+                  id="family-relation"
+                >
+                  <option value="">関係</option>
+                  <option value="配偶者">配偶者</option>
+                  <option value="子供">子供</option>
+                  <option value="親">親</option>
+                  <option value="兄弟">兄弟</option>
+                  <option value="友人">友人</option>
+                </select>
+              </div>
+              <div className="flex gap-2">
+                <div className="flex gap-1">
+                  <button
+                    type="button"
+                    onClick={() => setAgeInputMode("age")}
+                    className={`px-2 py-1 text-xs rounded ${
+                      ageInputMode === "age"
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-200 text-gray-700"
+                    }`}
+                  >
+                    年齢
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAgeInputMode("year")}
+                    className={`px-2 py-1 text-xs rounded ${
+                      ageInputMode === "year"
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-200 text-gray-700"
+                    }`}
+                  >
+                    生年
+                  </button>
+                </div>
+                <input
+                  type="number"
+                  placeholder={ageInputMode === "age" ? "年齢" : "生まれ年"}
+                  min={ageInputMode === "age" ? "0" : "1900"}
+                  max={ageInputMode === "age" ? "120" : currentYear.toString()}
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded text-sm"
+                  id={ageInputMode === "age" ? "family-age" : "family-birth-year"}
+                />
+              </div>
             </div>
             <button
               type="button"
@@ -237,20 +266,33 @@ export default function LifeSimulationPage() {
                   "family-relation",
                 ) as HTMLSelectElement
                 const ageInput = document.getElementById("family-age") as HTMLInputElement
+                const birthYearInput = document.getElementById(
+                  "family-birth-year",
+                ) as HTMLInputElement
 
-                if (nameInput.value && relationInput.value && ageInput.value) {
+                if (relationInput.value) {
+                  let age: number
+                  if (ageInputMode === "age" && ageInput?.value) {
+                    age = parseInt(ageInput.value)
+                  } else if (ageInputMode === "year" && birthYearInput?.value) {
+                    age = currentYear - parseInt(birthYearInput.value)
+                  } else {
+                    return
+                  }
+
                   setFamilyMembers([
                     ...familyMembers,
                     {
                       id: Date.now().toString(),
-                      name: nameInput.value,
+                      name: nameInput.value || "",
                       relation: relationInput.value,
-                      age: parseInt(ageInput.value),
+                      age,
                     },
                   ])
                   nameInput.value = ""
                   relationInput.value = ""
-                  ageInput.value = ""
+                  if (ageInput) ageInput.value = ""
+                  if (birthYearInput) birthYearInput.value = ""
                 }
               }}
               className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"

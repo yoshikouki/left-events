@@ -27,6 +27,8 @@ export function LifeCalculator() {
   const [newMemberName, setNewMemberName] = useState("")
   const [newMemberRelation, setNewMemberRelation] = useState("")
   const [newMemberAge, setNewMemberAge] = useState("")
+  const [newMemberBirthYear, setNewMemberBirthYear] = useState("")
+  const [ageInputMode, setAgeInputMode] = useState<"age" | "year">("age")
   const lifeExpectancy = 85
   const healthyLifeExpectancy = 72 // 健康寿命
 
@@ -96,7 +98,7 @@ export function LifeCalculator() {
       }
 
       return {
-        name: `${member.name}と会う`,
+        name: member.name ? `${member.name}と会う` : `${member.relation}と会う`,
         frequency,
         icon: <Users className="w-4 h-4 text-blue-500" />,
         remainingCount: Math.round(remainingWithMember),
@@ -116,21 +118,34 @@ export function LifeCalculator() {
   }, [birthYear, currentYear, familyMembers])
 
   const handleAddFamilyMember = () => {
-    if (newMemberName && newMemberRelation && newMemberAge) {
-      const memberBirthYear = currentYear - parseInt(newMemberAge)
+    if (newMemberRelation && (newMemberAge || newMemberBirthYear)) {
+      let age: number
+      let birthYear: number
+
+      if (ageInputMode === "age" && newMemberAge) {
+        age = parseInt(newMemberAge)
+        birthYear = currentYear - age
+      } else if (ageInputMode === "year" && newMemberBirthYear) {
+        birthYear = parseInt(newMemberBirthYear)
+        age = currentYear - birthYear
+      } else {
+        return
+      }
+
       setFamilyMembers([
         ...familyMembers,
         {
           id: Date.now().toString(),
-          name: newMemberName,
+          name: newMemberName || "",
           relation: newMemberRelation,
-          birthYear: memberBirthYear,
-          age: parseInt(newMemberAge),
+          birthYear,
+          age,
         },
       ])
       setNewMemberName("")
       setNewMemberRelation("")
       setNewMemberAge("")
+      setNewMemberBirthYear("")
     }
   }
 
@@ -252,7 +267,7 @@ export function LifeCalculator() {
                   className="flex items-center justify-between bg-gray-50 p-2 rounded"
                 >
                   <span className="text-sm">
-                    {member.name} ({member.relation}, {member.age}歳)
+                    {member.name || member.relation} ({member.age}歳)
                   </span>
                   <button
                     type="button"
@@ -263,35 +278,75 @@ export function LifeCalculator() {
                   </button>
                 </div>
               ))}
-              <div className="grid grid-cols-3 gap-2">
-                <input
-                  type="text"
-                  value={newMemberName}
-                  onChange={(e) => setNewMemberName(e.target.value)}
-                  placeholder="名前"
-                  className="px-3 py-2 border border-gray-300 rounded text-sm"
-                />
-                <select
-                  value={newMemberRelation}
-                  onChange={(e) => setNewMemberRelation(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded text-sm"
-                >
-                  <option value="">関係</option>
-                  <option value="配偶者">配偶者</option>
-                  <option value="子供">子供</option>
-                  <option value="親">親</option>
-                  <option value="兄弟">兄弟</option>
-                  <option value="友人">友人</option>
-                </select>
-                <input
-                  type="number"
-                  value={newMemberAge}
-                  onChange={(e) => setNewMemberAge(e.target.value)}
-                  placeholder="年齢"
-                  min="0"
-                  max="120"
-                  className="px-3 py-2 border border-gray-300 rounded text-sm"
-                />
+              <div className="space-y-2">
+                <div className="grid grid-cols-2 gap-2">
+                  <input
+                    type="text"
+                    value={newMemberName}
+                    onChange={(e) => setNewMemberName(e.target.value)}
+                    placeholder="名前（省略可）"
+                    className="px-3 py-2 border border-gray-300 rounded text-sm"
+                  />
+                  <select
+                    value={newMemberRelation}
+                    onChange={(e) => setNewMemberRelation(e.target.value)}
+                    className="px-3 py-2 border border-gray-300 rounded text-sm"
+                  >
+                    <option value="">関係</option>
+                    <option value="配偶者">配偶者</option>
+                    <option value="子供">子供</option>
+                    <option value="親">親</option>
+                    <option value="兄弟">兄弟</option>
+                    <option value="友人">友人</option>
+                  </select>
+                </div>
+                <div className="flex gap-2">
+                  <div className="flex gap-1">
+                    <button
+                      type="button"
+                      onClick={() => setAgeInputMode("age")}
+                      className={`px-2 py-1 text-xs rounded ${
+                        ageInputMode === "age"
+                          ? "bg-blue-500 text-white"
+                          : "bg-gray-200 text-gray-700"
+                      }`}
+                    >
+                      年齢
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setAgeInputMode("year")}
+                      className={`px-2 py-1 text-xs rounded ${
+                        ageInputMode === "year"
+                          ? "bg-blue-500 text-white"
+                          : "bg-gray-200 text-gray-700"
+                      }`}
+                    >
+                      生年
+                    </button>
+                  </div>
+                  {ageInputMode === "age" ? (
+                    <input
+                      type="number"
+                      value={newMemberAge}
+                      onChange={(e) => setNewMemberAge(e.target.value)}
+                      placeholder="年齢"
+                      min="0"
+                      max="120"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded text-sm"
+                    />
+                  ) : (
+                    <input
+                      type="number"
+                      value={newMemberBirthYear}
+                      onChange={(e) => setNewMemberBirthYear(e.target.value)}
+                      placeholder="生まれ年"
+                      min="1900"
+                      max={currentYear}
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded text-sm"
+                    />
+                  )}
+                </div>
               </div>
               <button
                 type="button"
