@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
-import { BarChart3, BookOpen, Home } from "lucide-react"
+import { BarChart3, BookOpen, Clock, Home } from "lucide-react"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -57,6 +57,13 @@ export default function RootLayout({
                   >
                     <BarChart3 className="w-4 h-4" />
                     可視化
+                  </a>
+                  <a
+                    href="/life-simulation"
+                    className="inline-flex items-center gap-1 px-1 pt-1 text-sm font-medium text-gray-900 hover:text-gray-700"
+                  >
+                    <Clock className="w-4 h-4" />
+                    残り回数
                   </a>
                 </div>
               </div>
