@@ -482,10 +482,70 @@ export function LifeCalculator() {
                       </div>
                     </div>
 
+                    {/* 大切な人の節目までの残り回数 */}
+                    {persons.filter((p) => p.relation !== "self").length > 0 && (
+                      <div className="mt-2 pt-2 border-t border-gray-200">
+                        <p className="text-xs text-gray-500 mb-1">大切な人の節目まで:</p>
+                        <div className="flex flex-wrap gap-2">
+                          {persons
+                            .filter((p) => p.relation !== "self")
+                            .map((person) => {
+                              const personAge = currentYear - person.birthYear
+                              let milestone = ""
+                              let yearsUntilMilestone = 0
+
+                              // 各関係性のデフォルト節目年齢を計算
+                              if (person.relation === "child") {
+                                milestone = "成人"
+                                yearsUntilMilestone = Math.max(0, 18 - personAge)
+                              } else if (person.relation === "parent") {
+                                milestone = "85歳"
+                                yearsUntilMilestone = Math.max(0, 85 - personAge)
+                              } else if (person.relation === "partner" && calculations) {
+                                milestone = "健康寿命"
+                                yearsUntilMilestone = Math.min(
+                                  calculations.healthyRemainingYears,
+                                  Math.max(0, healthyLifeExpectancy - personAge),
+                                )
+                              } else if (calculations) {
+                                milestone = "30年後"
+                                yearsUntilMilestone = Math.min(
+                                  calculations.healthyRemainingYears,
+                                  30,
+                                )
+                              }
+
+                              const remainingCount = Math.round(
+                                event.frequency * yearsUntilMilestone,
+                              )
+
+                              if (yearsUntilMilestone <= 0) return null
+
+                              return (
+                                <span
+                                  key={person.id}
+                                  className="text-sm bg-white px-2 py-1 rounded"
+                                >
+                                  {person.name || relationLabels[person.relation]}の{milestone}まで
+                                  <span
+                                    className={`ml-1 font-semibold ${
+                                      remainingCount < 20 ? "text-red-600" : "text-gray-700"
+                                    }`}
+                                  >
+                                    {remainingCount}回
+                                  </span>
+                                </span>
+                              )
+                            })
+                            .filter(Boolean)}
+                        </div>
+                      </div>
+                    )}
+
                     {/* 共有している人のリスト */}
                     {sharedWithPersons.length > 0 && (
                       <div className="mt-2 pt-2 border-t border-gray-200">
-                        <p className="text-xs text-gray-500 mb-1">一緒に過ごす人:</p>
+                        <p className="text-xs text-gray-500 mb-1">この予定を共有:</p>
                         <div className="flex flex-wrap gap-2">
                           {sharedWithPersons.map(({ personEvent, person }) => {
                             if (!person) return null
@@ -514,17 +574,10 @@ export function LifeCalculator() {
                             return (
                               <span
                                 key={personEvent.id}
-                                className="text-sm bg-white px-2 py-1 rounded"
+                                className="text-sm bg-blue-50 text-blue-700 px-2 py-1 rounded"
                               >
-                                {person.name || relationLabels[person.relation]} (
-                                <span
-                                  className={
-                                    remainingCount < 20 ? "text-red-600 font-semibold" : ""
-                                  }
-                                >
-                                  {remainingCount}回
-                                </span>
-                                )
+                                {person.name || relationLabels[person.relation]}と
+                                <span className="font-semibold ml-1">{remainingCount}回</span>
                               </span>
                             )
                           })}
