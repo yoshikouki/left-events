@@ -146,7 +146,6 @@ export function LifeCalculator() {
       case "month":
         annualFrequency = frequency * 12
         break
-      case "year":
       default:
         annualFrequency = frequency
         break
