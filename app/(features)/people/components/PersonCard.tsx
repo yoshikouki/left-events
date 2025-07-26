@@ -1,9 +1,15 @@
 "use client"
 
+import { motion } from "framer-motion"
 import { Button } from "@/app/(shared)/components/Button"
 import { Card } from "@/app/(shared)/components/Card"
+import { CircularProgress } from "@/app/(shared)/components/CircularProgress"
 import type { LifeEvent, Person } from "@/app/(shared)/types"
-import { calculateRemainingCount, getDefaultUntilAge } from "@/app/(shared)/utils/calculations"
+import {
+  calculateRemainingCount,
+  getDefaultUntilAge,
+  LIFE_EXPECTANCY,
+} from "@/app/(shared)/utils/calculations"
 
 interface PersonCardProps {
   person: Person
@@ -25,48 +31,99 @@ export function PersonCard({ person, events, currentAge, onRemove }: PersonCardP
   const personAge = new Date().getFullYear() - person.birthYear
   const untilAge = getDefaultUntilAge(person.relationship, personAge, currentAge)
 
+  const getRelationshipEmoji = () => {
+    const emojis: Record<Person["relationship"], string> = {
+      self: "😊",
+      child: "👶",
+      partner: "💑",
+      parent: "👨‍👩‍👧",
+      friend: "🤝",
+      other: "👥",
+    }
+    return emojis[person.relationship] || "👥"
+  }
+
   return (
-    <Card className="p-6">
-      <div className="space-y-4">
-        <div className="flex justify-between items-start">
-          <div>
-            <h3 className="text-xl font-semibold text-gray-900">{person.name}</h3>
-            <p className="text-sm text-gray-600">
-              {personAge}歳 / {RELATIONSHIP_LABELS[person.relationship]}
-            </p>
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.3 }}
+      whileHover={{ scale: 1.02 }}
+    >
+      <Card className="p-6 bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-100">
+        <div className="space-y-4">
+          <div className="flex justify-between items-start">
+            <div className="flex items-start gap-3">
+              <div className="text-3xl">{getRelationshipEmoji()}</div>
+              <div>
+                <h3 className="text-xl font-semibold text-gray-900">{person.name}</h3>
+                <p className="text-sm text-gray-600">
+                  {personAge}歳 / {RELATIONSHIP_LABELS[person.relationship]}
+                </p>
+              </div>
+            </div>
+            <Button variant="ghost" size="small" onClick={() => onRemove(person.id)}>
+              削除
+            </Button>
           </div>
-          <Button variant="ghost" size="small" onClick={() => onRemove(person.id)}>
-            削除
-          </Button>
-        </div>
 
-        <div className="space-y-3">
-          <div className="text-sm font-medium text-gray-700">
-            {person.name}の{untilAge}歳まで
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {events.slice(0, 4).map((event) => {
-              const remainingCount = calculateRemainingCount(
-                personAge,
-                untilAge,
-                event.annualFrequency,
-              )
-              const isUrgent = remainingCount < 20
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="text-sm font-medium text-gray-700">
+                {person.name}の{untilAge}歳まで
+              </div>
+              <div className="text-xs text-gray-500">あと{untilAge - personAge}年</div>
+            </div>
 
-              return (
-                <div key={event.id} className="bg-gray-50 rounded-lg p-3">
-                  <div className="text-sm font-medium text-gray-700">{event.name}</div>
-                  <div
-                    className={`text-xl font-bold ${isUrgent ? "text-red-600" : "text-gray-900"}`}
+            <div className="grid grid-cols-2 gap-3">
+              {events.slice(0, 4).map((event) => {
+                const remainingCount = calculateRemainingCount(
+                  personAge,
+                  untilAge,
+                  event.annualFrequency,
+                )
+                const totalCount = calculateRemainingCount(
+                  personAge,
+                  LIFE_EXPECTANCY,
+                  event.annualFrequency,
+                )
+                const isUrgent = remainingCount < 20
+
+                return (
+                  <motion.div
+                    key={event.id}
+                    className="bg-white/70 backdrop-blur-sm rounded-xl p-3 border border-gray-100"
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ type: "spring", stiffness: 300 }}
                   >
-                    あと{remainingCount}回
-                  </div>
-                </div>
-              )
-            })}
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="text-sm font-medium text-gray-700 truncate">{event.name}</div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <CircularProgress
+                        value={remainingCount}
+                        maxValue={totalCount}
+                        size={48}
+                        strokeWidth={4}
+                        color={isUrgent ? "#DC2626" : "#8B5CF6"}
+                        showPercentage={false}
+                      />
+                      <div>
+                        <div
+                          className={`text-lg font-bold ${isUrgent ? "text-red-600" : "text-gray-900"}`}
+                        >
+                          {remainingCount}回
+                        </div>
+                        <div className="text-xs text-gray-500">残り</div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )
+              })}
+            </div>
           </div>
         </div>
-      </div>
-    </Card>
+      </Card>
+    </motion.div>
   )
 }
