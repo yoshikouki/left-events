@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { AgeInput } from "@/app/(features)/life-counter/components/AgeInput"
 import { EventCounter } from "@/app/(features)/life-counter/components/EventCounter"
 import { MilestoneCard } from "@/app/(features)/life-counter/components/MilestoneCard"
@@ -27,27 +27,33 @@ export default function HomePage() {
     setPeople(savedPeople)
   }, [])
 
-  const handleAgeChange = (age: number) => {
+  const handleAgeChange = useCallback((age: number) => {
     setCurrentAge(age)
     storage.saveUserAge(age)
-  }
+  }, [])
 
-  const handleAddPerson = (personData: Omit<Person, "id">) => {
-    const newPerson: Person = {
-      ...personData,
-      id: Date.now().toString(),
-    }
-    const updatedPeople = [...people, newPerson]
-    setPeople(updatedPeople)
-    storage.savePeople(updatedPeople)
-    setShowPersonForm(false)
-  }
+  const handleAddPerson = useCallback(
+    (personData: Omit<Person, "id">) => {
+      const newPerson: Person = {
+        ...personData,
+        id: Date.now().toString(),
+      }
+      const updatedPeople = [...people, newPerson]
+      setPeople(updatedPeople)
+      storage.savePeople(updatedPeople)
+      setShowPersonForm(false)
+    },
+    [people],
+  )
 
-  const handleRemovePerson = (id: string) => {
-    const updatedPeople = people.filter((p) => p.id !== id)
-    setPeople(updatedPeople)
-    storage.savePeople(updatedPeople)
-  }
+  const handleRemovePerson = useCallback(
+    (id: string) => {
+      const updatedPeople = people.filter((p) => p.id !== id)
+      setPeople(updatedPeople)
+      storage.savePeople(updatedPeople)
+    },
+    [people],
+  )
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-blue-50">

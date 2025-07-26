@@ -1,6 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
+import { useMemo } from "react"
 import { Button } from "@/app/(shared)/components/Button"
 import { Card } from "@/app/(shared)/components/Card"
 import { CircularProgress } from "@/app/(shared)/components/CircularProgress"
@@ -28,10 +29,13 @@ const RELATIONSHIP_LABELS: Record<Person["relationship"], string> = {
 }
 
 export function PersonCard({ person, events, currentAge, onRemove }: PersonCardProps) {
-  const personAge = new Date().getFullYear() - person.birthYear
-  const untilAge = getDefaultUntilAge(person.relationship, personAge, currentAge)
+  const personAge = useMemo(() => new Date().getFullYear() - person.birthYear, [person.birthYear])
+  const untilAge = useMemo(
+    () => getDefaultUntilAge(person.relationship, personAge, currentAge),
+    [person.relationship, personAge, currentAge],
+  )
 
-  const getRelationshipEmoji = () => {
+  const relationshipEmoji = useMemo(() => {
     const emojis: Record<Person["relationship"], string> = {
       self: "😊",
       child: "👶",
@@ -41,7 +45,7 @@ export function PersonCard({ person, events, currentAge, onRemove }: PersonCardP
       other: "👥",
     }
     return emojis[person.relationship] || "👥"
-  }
+  }, [person.relationship])
 
   return (
     <motion.div
@@ -50,14 +54,14 @@ export function PersonCard({ person, events, currentAge, onRemove }: PersonCardP
       transition={{ duration: 0.3 }}
       whileHover={{ scale: 1.02 }}
     >
-      <Card className="p-6 bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-100">
-        <div className="space-y-4">
+      <Card className="p-4 sm:p-6 bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-100">
+        <div className="space-y-3 sm:space-y-4">
           <div className="flex justify-between items-start">
-            <div className="flex items-start gap-3">
-              <div className="text-3xl">{getRelationshipEmoji()}</div>
+            <div className="flex items-start gap-2 sm:gap-3">
+              <div className="text-2xl sm:text-3xl">{relationshipEmoji}</div>
               <div>
-                <h3 className="text-xl font-semibold text-gray-900">{person.name}</h3>
-                <p className="text-sm text-gray-600">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900">{person.name}</h3>
+                <p className="text-xs sm:text-sm text-gray-600">
                   {personAge}歳 / {RELATIONSHIP_LABELS[person.relationship]}
                 </p>
               </div>
@@ -67,15 +71,15 @@ export function PersonCard({ person, events, currentAge, onRemove }: PersonCardP
             </Button>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             <div className="flex items-center justify-between">
-              <div className="text-sm font-medium text-gray-700">
+              <div className="text-xs sm:text-sm font-medium text-gray-700">
                 {person.name}の{untilAge}歳まで
               </div>
               <div className="text-xs text-gray-500">あと{untilAge - personAge}年</div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2 sm:gap-3">
               {events.slice(0, 4).map((event) => {
                 const remainingCount = calculateRemainingCount(
                   personAge,
@@ -92,25 +96,27 @@ export function PersonCard({ person, events, currentAge, onRemove }: PersonCardP
                 return (
                   <motion.div
                     key={event.id}
-                    className="bg-white/70 backdrop-blur-sm rounded-xl p-3 border border-gray-100"
+                    className="bg-white/70 backdrop-blur-sm rounded-xl p-2 sm:p-3 border border-gray-100"
                     whileHover={{ scale: 1.05 }}
                     transition={{ type: "spring", stiffness: 300 }}
                   >
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="text-sm font-medium text-gray-700 truncate">{event.name}</div>
+                    <div className="flex items-center justify-between mb-1 sm:mb-2">
+                      <div className="text-xs sm:text-sm font-medium text-gray-700 truncate">
+                        {event.name}
+                      </div>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 sm:gap-3">
                       <CircularProgress
                         value={remainingCount}
                         maxValue={totalCount}
-                        size={48}
-                        strokeWidth={4}
+                        size={40}
+                        strokeWidth={3}
                         color={isUrgent ? "#DC2626" : "#8B5CF6"}
                         showPercentage={false}
                       />
                       <div>
                         <div
-                          className={`text-lg font-bold ${isUrgent ? "text-red-600" : "text-gray-900"}`}
+                          className={`text-base sm:text-lg font-bold ${isUrgent ? "text-red-600" : "text-gray-900"}`}
                         >
                           {remainingCount}回
                         </div>

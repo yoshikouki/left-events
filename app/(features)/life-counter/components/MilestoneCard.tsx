@@ -32,49 +32,52 @@ export function MilestoneCard({ milestone, currentAge }: MilestoneCardProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Card className={`p-6 bg-gradient-to-br ${getColorClass()} border`}>
-        <div className="space-y-4">
+      <Card className={`p-4 sm:p-6 bg-gradient-to-br ${getColorClass()} border`}>
+        <div className="space-y-3 sm:space-y-4">
           <div>
-            <h3 className="text-xl font-semibold text-gray-900">{milestone.name}</h3>
+            <h3 className="text-lg sm:text-xl font-semibold text-gray-900">{milestone.name}</h3>
             {milestone.description && (
-              <p className="text-sm text-gray-600 mt-1">{milestone.description}</p>
+              <p className="text-xs sm:text-sm text-gray-600 mt-1">{milestone.description}</p>
             )}
           </div>
 
           <div className="relative">
             <div className="flex items-center gap-4">
               <div className="flex-1">
-                <div className="flex items-baseline gap-2">
+                <div className="flex items-baseline gap-1 sm:gap-2">
                   <motion.span
-                    className={`text-5xl font-bold ${getTextColor()}`}
+                    className={`text-3xl sm:text-5xl font-bold ${getTextColor()}`}
                     initial={{ scale: 0.8 }}
                     animate={{ scale: 1 }}
                     transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
                   >
                     {remainingYears}
                   </motion.span>
-                  <span className="text-lg text-gray-600">年</span>
+                  <span className="text-base sm:text-lg text-gray-600">年</span>
                 </div>
-                <div className="text-sm text-gray-500 mt-1">{milestone.targetAge}歳で迎える</div>
+                <div className="text-xs sm:text-sm text-gray-500 mt-1">
+                  {milestone.targetAge}歳で迎える
+                </div>
               </div>
 
               {/* ビジュアルインジケーター */}
-              <div className="relative w-24 h-24">
+              <div className="relative w-16 h-16 sm:w-24 sm:h-24">
                 <svg
                   className="w-full h-full transform -rotate-90"
                   role="img"
                   aria-label={`${milestone.name}まで${remainingYears}年`}
+                  viewBox="0 0 96 96"
                 >
                   <title>
                     {milestone.name}まで{remainingYears}年
                   </title>
-                  <circle cx="48" cy="48" r="40" stroke="#E5E7EB" strokeWidth="8" fill="none" />
+                  <circle cx="48" cy="48" r="40" stroke="#E5E7EB" strokeWidth="6" fill="none" />
                   <motion.circle
                     cx="48"
                     cy="48"
                     r="40"
                     stroke={isNear ? "#EA580C" : "#3B82F6"}
-                    strokeWidth="8"
+                    strokeWidth="6"
                     fill="none"
                     strokeLinecap="round"
                     strokeDasharray={`${2 * Math.PI * 40}`}
@@ -84,7 +87,7 @@ export function MilestoneCard({ milestone, currentAge }: MilestoneCardProps) {
                   />
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-2xl">🎯</span>
+                  <span className="text-lg sm:text-2xl">🎯</span>
                 </div>
               </div>
             </div>

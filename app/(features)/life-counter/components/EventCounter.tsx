@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { Card } from "@/app/(shared)/components/Card"
 import { CircularProgress } from "@/app/(shared)/components/CircularProgress"
 import { DotMatrix } from "@/app/(shared)/components/DotMatrix"
@@ -18,33 +18,38 @@ type DisplayMode = "number" | "circular" | "dots"
 
 export function EventCounter({ event, currentAge, targetAge, targetLabel }: EventCounterProps) {
   const [displayMode, setDisplayMode] = useState<DisplayMode>("circular")
-  const remainingCount = calculateRemainingCount(currentAge, targetAge, event.annualFrequency)
-  const totalPossibleCount = calculateRemainingCount(
-    currentAge,
-    LIFE_EXPECTANCY,
-    event.annualFrequency,
-  )
-  const isUrgent = remainingCount < 20
-  const isVeryUrgent = remainingCount < 10
 
-  const getEventShape = () => {
+  const { remainingCount, totalPossibleCount, isUrgent, isVeryUrgent } = useMemo(() => {
+    const remaining = calculateRemainingCount(currentAge, targetAge, event.annualFrequency)
+    const total = calculateRemainingCount(currentAge, LIFE_EXPECTANCY, event.annualFrequency)
+    return {
+      remainingCount: remaining,
+      totalPossibleCount: total,
+      isUrgent: remaining < 20,
+      isVeryUrgent: remaining < 10,
+    }
+  }, [currentAge, targetAge, event.annualFrequency])
+
+  const eventShape = useMemo(() => {
     if (event.name.includes("誕生日")) return "heart"
     if (event.category === "special") return "circle"
     return "square"
-  }
+  }, [event.name, event.category])
 
-  const getEventColor = () => {
+  const eventColor = useMemo(() => {
     if (isUrgent) return "#DC2626"
     if (event.category === "milestone") return "#7C3AED"
     if (event.category === "special") return "#EC4899"
     return "#3B82F6"
-  }
+  }, [isUrgent, event.category])
 
   return (
-    <Card className="p-4 hover:shadow-lg transition-shadow">
-      <div className="space-y-3">
+    <Card className="p-3 sm:p-4 hover:shadow-lg transition-shadow">
+      <div className="space-y-2 sm:space-y-3">
         <div className="flex justify-between items-start">
-          <h3 className="text-lg font-semibold text-gray-900">{event.name}</h3>
+          <h3 className="text-sm sm:text-lg font-semibold text-gray-900 line-clamp-2">
+            {event.name}
+          </h3>
           <button
             type="button"
             onClick={() => {
@@ -52,19 +57,23 @@ export function EventCounter({ event, currentAge, targetAge, targetLabel }: Even
               const currentIndex = modes.indexOf(displayMode)
               setDisplayMode(modes[(currentIndex + 1) % modes.length])
             }}
-            className="text-xs text-gray-500 hover:text-gray-700 transition-colors"
+            className="text-xs text-gray-500 hover:text-gray-700 transition-colors ml-2 flex-shrink-0"
           >
-            表示切替
+            切替
           </button>
         </div>
 
-        <div className="flex flex-col items-center py-2">
+        <div className="flex flex-col items-center py-1 sm:py-2">
           {displayMode === "number" && (
             <div className="text-center space-y-1">
-              <div className={`text-3xl font-bold ${isUrgent ? "text-red-600" : "text-gray-900"}`}>
+              <div
+                className={`text-2xl sm:text-3xl font-bold ${isUrgent ? "text-red-600" : "text-gray-900"}`}
+              >
                 あと{remainingCount}回
               </div>
-              {isVeryUrgent && <div className="text-sm text-red-600 font-medium">残りわずか</div>}
+              {isVeryUrgent && (
+                <div className="text-xs sm:text-sm text-red-600 font-medium">残りわずか</div>
+              )}
             </div>
           )}
 
@@ -72,10 +81,10 @@ export function EventCounter({ event, currentAge, targetAge, targetLabel }: Even
             <CircularProgress
               value={remainingCount}
               maxValue={totalPossibleCount}
-              size={100}
-              strokeWidth={8}
+              size={80}
+              strokeWidth={6}
               label="回"
-              color={getEventColor()}
+              color={eventColor}
               showPercentage={false}
             />
           )}
@@ -84,17 +93,17 @@ export function EventCounter({ event, currentAge, targetAge, targetLabel }: Even
             <DotMatrix
               total={remainingCount}
               filled={remainingCount}
-              maxDisplay={50}
-              dotSize={6}
-              gap={3}
-              filledColor={getEventColor()}
-              shape={getEventShape()}
+              maxDisplay={30}
+              dotSize={5}
+              gap={2}
+              filledColor={eventColor}
+              shape={eventShape}
             />
           )}
         </div>
 
         <div className="space-y-1">
-          <div className="text-sm text-gray-600">{targetLabel}まで</div>
+          <div className="text-xs sm:text-sm text-gray-600">{targetLabel}まで</div>
           <div className="text-xs text-gray-500">年{event.annualFrequency}回</div>
         </div>
       </div>

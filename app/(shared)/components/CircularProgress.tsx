@@ -63,9 +63,11 @@ export function CircularProgress({
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <div className="text-2xl font-bold text-gray-900">{value}</div>
-        {label && <div className="text-xs text-gray-600 mt-1">{label}</div>}
-        {showPercentage && <div className="text-sm text-gray-500">{Math.round(percentage)}%</div>}
+        <div className="text-base sm:text-xl md:text-2xl font-bold text-gray-900">{value}</div>
+        {label && <div className="text-xs text-gray-600 mt-0 sm:mt-1">{label}</div>}
+        {showPercentage && (
+          <div className="text-xs sm:text-sm text-gray-500">{Math.round(percentage)}%</div>
+        )}
       </div>
     </div>
   )

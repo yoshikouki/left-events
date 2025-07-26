@@ -1,6 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
+import { useMemo } from "react"
 
 interface DotMatrixProps {
   total: number
@@ -23,28 +24,39 @@ export function DotMatrix({
   emptyColor = "#E5E7EB",
   shape = "circle",
 }: DotMatrixProps) {
-  const displayTotal = Math.min(total, maxDisplay)
-  const displayFilled = Math.min(filled, displayTotal)
-  const columns = Math.ceil(Math.sqrt(displayTotal))
-  const rows = Math.ceil(displayTotal / columns)
-
-  const getShape = (isFilled: boolean) => {
-    const color = isFilled ? filledColor : emptyColor
-
-    switch (shape) {
-      case "square":
-        return <rect width={dotSize} height={dotSize} fill={color} rx={1} />
-      case "heart":
-        return (
-          <path
-            d={`M${dotSize / 2} ${dotSize * 0.9}C${dotSize * 0.2} ${dotSize * 0.6} 0 ${dotSize * 0.3} 0 ${dotSize * 0.2}C0 0 ${dotSize * 0.2} 0 ${dotSize * 0.3} 0C${dotSize * 0.4} 0 ${dotSize / 2} ${dotSize * 0.1} ${dotSize / 2} ${dotSize * 0.1}C${dotSize / 2} ${dotSize * 0.1} ${dotSize * 0.6} 0 ${dotSize * 0.7} 0C${dotSize * 0.8} 0 ${dotSize} 0 ${dotSize} ${dotSize * 0.2}C${dotSize} ${dotSize * 0.3} ${dotSize * 0.8} ${dotSize * 0.6} ${dotSize / 2} ${dotSize * 0.9}Z`}
-            fill={color}
-          />
-        )
-      default:
-        return <circle cx={dotSize / 2} cy={dotSize / 2} r={dotSize / 2} fill={color} />
+  const { displayTotal, displayFilled, columns, rows } = useMemo(() => {
+    const displayT = Math.min(total, maxDisplay)
+    const displayF = Math.min(filled, displayT)
+    const cols = Math.ceil(Math.sqrt(displayT))
+    const r = Math.ceil(displayT / cols)
+    return {
+      displayTotal: displayT,
+      displayFilled: displayF,
+      columns: cols,
+      rows: r,
     }
-  }
+  }, [total, filled, maxDisplay])
+
+  const getShape = useMemo(
+    () => (isFilled: boolean) => {
+      const color = isFilled ? filledColor : emptyColor
+
+      switch (shape) {
+        case "square":
+          return <rect width={dotSize} height={dotSize} fill={color} rx={1} />
+        case "heart":
+          return (
+            <path
+              d={`M${dotSize / 2} ${dotSize * 0.9}C${dotSize * 0.2} ${dotSize * 0.6} 0 ${dotSize * 0.3} 0 ${dotSize * 0.2}C0 0 ${dotSize * 0.2} 0 ${dotSize * 0.3} 0C${dotSize * 0.4} 0 ${dotSize / 2} ${dotSize * 0.1} ${dotSize / 2} ${dotSize * 0.1}C${dotSize / 2} ${dotSize * 0.1} ${dotSize * 0.6} 0 ${dotSize * 0.7} 0C${dotSize * 0.8} 0 ${dotSize} 0 ${dotSize} ${dotSize * 0.2}C${dotSize} ${dotSize * 0.3} ${dotSize * 0.8} ${dotSize * 0.6} ${dotSize / 2} ${dotSize * 0.9}Z`}
+              fill={color}
+            />
+          )
+        default:
+          return <circle cx={dotSize / 2} cy={dotSize / 2} r={dotSize / 2} fill={color} />
+      }
+    },
+    [dotSize, shape, filledColor, emptyColor],
+  )
 
   return (
     <div className="inline-block">
@@ -58,28 +70,32 @@ export function DotMatrix({
         <title>
           ドット表示: {filled}/{total}
         </title>
-        {Array.from({ length: displayTotal }).map((_, index) => {
-          const row = Math.floor(index / columns)
-          const col = index % columns
-          const x = col * (dotSize + gap)
-          const y = row * (dotSize + gap)
-          const isFilled = index < displayFilled
+        {useMemo(
+          () =>
+            Array.from({ length: displayTotal }).map((_, index) => {
+              const row = Math.floor(index / columns)
+              const col = index % columns
+              const x = col * (dotSize + gap)
+              const y = row * (dotSize + gap)
+              const isFilled = index < displayFilled
 
-          return (
-            <motion.g
-              key={`dot-${index}-${filled}`}
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{
-                delay: index * 0.01,
-                duration: 0.3,
-                ease: "easeOut",
-              }}
-            >
-              <g transform={`translate(${x}, ${y})`}>{getShape(isFilled)}</g>
-            </motion.g>
-          )
-        })}
+              return (
+                <motion.g
+                  key={`dot-${index}-${filled}`}
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{
+                    delay: index * 0.01,
+                    duration: 0.3,
+                    ease: "easeOut",
+                  }}
+                >
+                  <g transform={`translate(${x}, ${y})`}>{getShape(isFilled)}</g>
+                </motion.g>
+              )
+            }),
+          [displayTotal, displayFilled, columns, dotSize, gap, filled, getShape],
+        )}
       </svg>
       {total > maxDisplay && (
         <div className="text-sm text-gray-500 mt-2 text-center">他 {total - maxDisplay} 回</div>
