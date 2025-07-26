@@ -1,62 +1,34 @@
 "use client"
 
-import { BarChart3, BookOpen, Clock } from "lucide-react"
-import { LifeCalculator } from "./(shared)/components/LifeCalculator"
+import { useState } from "react"
+import { EventManager } from "./journey/components/EventManager"
+import { TimelineView } from "./journey/components/TimelineView"
+import { useLifeData } from "./journey/hooks/useLifeData"
 
-export default function Home() {
+export default function HomePage() {
+  const { currentAge, events, addEvent } = useLifeData()
+  const [showEventManager, setShowEventManager] = useState(false)
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
-            人生の経験を記録
-          </h1>
-          <p className="text-xl sm:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto">
-            残り回数を知り、大切に生きる
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
+        <header className="mb-8 md:mb-12 text-center">
+          <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2">Life Journey</h1>
+          <p className="text-base md:text-lg text-slate-600 px-4">
+            あなたの人生の残りステップを可視化
           </p>
-        </div>
+        </header>
 
-        {/* 寿命計算機能 */}
-        <div className="mb-12">
-          <LifeCalculator />
-        </div>
-      </section>
+        <TimelineView
+          currentAge={currentAge}
+          events={events}
+          onAddEventClick={() => setShowEventManager(true)}
+        />
 
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">機能</h2>
-        <div className="grid md:grid-cols-3 gap-8">
-          <div className="text-center">
-            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <BookOpen className="w-8 h-8 text-blue-600" />
-            </div>
-            <h3 className="text-xl font-semibold mb-2">記録</h3>
-            <p className="text-gray-600">瞬間を保存</p>
-          </div>
-          <div className="text-center">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <BarChart3 className="w-8 h-8 text-green-600" />
-            </div>
-            <h3 className="text-xl font-semibold mb-2">可視化</h3>
-            <p className="text-gray-600">バランス確認</p>
-          </div>
-          <div className="text-center">
-            <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Clock className="w-8 h-8 text-purple-600" />
-            </div>
-            <h3 className="text-xl font-semibold mb-2">残り回数</h3>
-            <p className="text-gray-600">あと何回</p>
-          </div>
-        </div>
-      </section>
-
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 bg-gray-50 rounded-2xl mb-16">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">今を大切に</h2>
-          <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-            限られた時間を意識して生きる
-          </p>
-        </div>
-      </section>
+        {showEventManager && (
+          <EventManager onClose={() => setShowEventManager(false)} onAddEvent={addEvent} />
+        )}
+      </div>
     </div>
   )
 }

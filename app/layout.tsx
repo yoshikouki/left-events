@@ -1,7 +1,6 @@
 import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
-import { BarChart3, BookOpen, Clock, Home } from "lucide-react"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,8 +13,8 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "Left Events",
-  description: "人生の経験を記録",
+  title: "Life Journey",
+  description: "人生の残りステップを可視化",
 }
 
 export default function RootLayout({
@@ -25,49 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <nav className="bg-white border-b border-gray-200">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between h-16">
-              <div className="flex">
-                <div className="flex-shrink-0 flex items-center">
-                  <a href="/" className="text-xl font-bold text-gray-900">
-                    Left Events
-                  </a>
-                </div>
-                <div className="ml-6 flex space-x-8">
-                  <a
-                    href="/"
-                    className="inline-flex items-center gap-1 px-1 pt-1 text-sm font-medium text-gray-900 hover:text-gray-700"
-                  >
-                    <Home className="w-4 h-4" />
-                  </a>
-                  <a
-                    href="/experiences"
-                    className="inline-flex items-center gap-1 px-1 pt-1 text-sm font-medium text-gray-900 hover:text-gray-700"
-                  >
-                    <BookOpen className="w-4 h-4" />
-                    記録
-                  </a>
-                  <a
-                    href="/visualization"
-                    className="inline-flex items-center gap-1 px-1 pt-1 text-sm font-medium text-gray-900 hover:text-gray-700"
-                  >
-                    <BarChart3 className="w-4 h-4" />
-                  </a>
-                  <a
-                    href="/life-simulation"
-                    className="inline-flex items-center gap-1 px-1 pt-1 text-sm font-medium text-gray-900 hover:text-gray-700"
-                  >
-                    <Clock className="w-4 h-4" />
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </nav>
-        <main>{children}</main>
-      </body>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>{children}</body>
     </html>
   )
 }
