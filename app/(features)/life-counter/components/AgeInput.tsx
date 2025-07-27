@@ -6,11 +6,12 @@ import { Button } from "@/app/(shared)/components/Button"
 interface AgeInputProps {
   initialAge: number
   onAgeChange: (age: number) => void
+  autoFocus?: boolean
 }
 
-export function AgeInput({ initialAge, onAgeChange }: AgeInputProps) {
+export function AgeInput({ initialAge, onAgeChange, autoFocus = false }: AgeInputProps) {
   const [age, setAge] = useState(initialAge)
-  const [isEditing, setIsEditing] = useState(false)
+  const [isEditing, setIsEditing] = useState(autoFocus)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -38,6 +39,8 @@ export function AgeInput({ initialAge, onAgeChange }: AgeInputProps) {
         onChange={(e) => setAge(parseInt(e.target.value) || 0)}
         min="0"
         max="120"
+        // biome-ignore lint/a11y/noAutofocus: 年齢入力時は意図的にフォーカス
+        autoFocus={autoFocus}
         className="w-20 px-3 py-1.5 text-2xl font-semibold text-center border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
       <span className="text-2xl font-semibold text-gray-900">歳</span>

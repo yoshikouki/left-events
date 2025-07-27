@@ -12,11 +12,18 @@ interface EventCounterProps {
   currentAge: number
   targetAge: number
   targetLabel: string
+  minimal?: boolean
 }
 
 type DisplayMode = "number" | "circular" | "dots"
 
-export function EventCounter({ event, currentAge, targetAge, targetLabel }: EventCounterProps) {
+export function EventCounter({
+  event,
+  currentAge,
+  targetAge,
+  targetLabel,
+  minimal = false,
+}: EventCounterProps) {
   const [displayMode, setDisplayMode] = useState<DisplayMode>("circular")
 
   const { remainingCount, totalPossibleCount, isUrgent, isVeryUrgent } = useMemo(() => {
@@ -42,6 +49,26 @@ export function EventCounter({ event, currentAge, targetAge, targetLabel }: Even
     if (event.category === "special") return "#EC4899"
     return "#3B82F6"
   }, [isUrgent, event.category])
+
+  if (minimal) {
+    return (
+      <div className="group cursor-pointer">
+        <div className="transition-all duration-300 hover:scale-105">
+          <CircularProgress
+            value={remainingCount}
+            maxValue={totalPossibleCount}
+            size={100}
+            strokeWidth={4}
+            label=""
+            color={eventColor}
+            showPercentage={false}
+          />
+        </div>
+        <h3 className="text-sm font-medium text-gray-700 mt-3 text-center">{event.name}</h3>
+        <p className="text-xs text-gray-500 text-center mt-1">あと{remainingCount}回</p>
+      </div>
+    )
+  }
 
   return (
     <Card className="p-3 sm:p-4 hover:shadow-lg transition-shadow">
